@@ -11,8 +11,8 @@ project "SquareRun"
     language "C++"
     cppdialect "C++17"
 
-    targetdir "bin/%{prj.name}/"
-    objdir "objs/%{cfg.buildcfg}-%{cfg.architecture}/%{prj.name}/"
+    targetdir "bin/game/"
+    objdir "objs/%{cfg.buildcfg}-%{cfg.architecture}/"
 
     includedirs { "%{prj.name}/src" }
     files { "%{prj.name}/src/**.h", "%{prj.name}/src/**.cpp", "%{prj.name}/src/**.tpp" }
