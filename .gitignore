@@ -363,3 +363,5 @@ FodyWeavers.xsd
 /SquareRun.sln
 /SquareRun/SquareRun.vcxproj.filters
 /SquareRun/SquareRun.vcxproj
+/objs/Debug-x86_64
+/bin/game
