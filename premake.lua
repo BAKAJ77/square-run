@@ -11,8 +11,8 @@ project "SquareRun"
     cppdialect "C++17"
     targetdir "bin/game/"
 
-    includedirs { "%{prj.name}/src", "libs/boost/boost", "libs/fmod/core/inc", "libs/freetype/include",
-        "libs/glad/include", "libs/glfw/include", "libs/glm", "libs/stb" }
+    includedirs { "%{prj.name}/src", "libs/asio/include", "libs/fmod/core/inc", "libs/freetype/include",
+        "libs/glad/include", "libs/glfw/include", "libs/glm", "libs/stb", "libs/json/single_include" }
 
     files { "%{prj.name}/src/**.h", "%{prj.name}/src/**.cpp", "%{prj.name}/src/**.c", "%{prj.name}/src/**.tpp" }
 
