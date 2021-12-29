@@ -1,5 +1,7 @@
 #include <util/directory_system.h>
+
 #include <filesystem>
+#include <fstream>
 
 namespace Util
 {
@@ -33,5 +35,11 @@ namespace Util
 	bool IsExistingDirectory(const std::string_view& directory)
 	{
 		return std::filesystem::exists(directory);
+	}
+
+	bool IsExistingFile(const std::string_view& filePath)
+	{
+		std::ifstream file(filePath.data());
+		return !file.fail();
 	}
 }

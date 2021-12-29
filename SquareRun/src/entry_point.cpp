@@ -1,8 +1,7 @@
-#include <serialization/config.h>
-#include <iostream>
+#include <core/game_core.h>
 
 int main(int argc, char** argv)
 {
-	int x = Serialization::GetConfigElement<int>("window", "width");
+	GameCore gameCore;
 	return 0;
 }

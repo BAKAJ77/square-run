@@ -10,7 +10,7 @@ namespace Util
 	extern std::string GetTimeStampStr();
 
 	// Returns time that has passed (in seconds) since epoch (1st Jan 1970).
-	extern uint64_t GetTimeSinceEpoch();
+	extern double GetSecondsSinceEpoch();
 }
 
 #endif

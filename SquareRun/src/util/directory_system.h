@@ -15,6 +15,9 @@ namespace Util
 
 	// Returns TRUE if the directory at the path given exists, if it doesn't then FALSE is returned.
 	extern bool IsExistingDirectory(const std::string_view& directory);
+
+	// Returns TRUE if the file specified exists, else FALSE is returned.
+	extern bool IsExistingFile(const std::string_view& filePath);
 }
 
 #endif

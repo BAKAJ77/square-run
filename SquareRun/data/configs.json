@@ -3,6 +3,7 @@
         "fullscreen": false,
         "height": 900,
         "resizable": false,
+        "vsync": false,
         "width": 1600
     }
 }

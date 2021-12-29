@@ -17,7 +17,8 @@ namespace Serialization
 					{ "width", 1600 },
 					{ "height", 900 },
 					{ "fullscreen", false },
-					{ "resizable", false }
+					{ "resizable", false },
+					{ "vsync", false }
 				}
 			}
 		};
