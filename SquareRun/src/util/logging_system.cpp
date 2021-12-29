@@ -11,9 +11,11 @@
 
 LogSystem::LogSystem()
 {
+#ifndef _DEBUG
 	// Get the APPDATA directory, then open up an empty runtime log file
 	this->directory = Util::GetGameRequisitesDirectory();
 	std::ofstream logFile(this->directory + "runtime_log.txt", std::ios::trunc);
+#endif
 }
 
 LogSystem::~LogSystem() = default;
