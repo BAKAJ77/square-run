@@ -21,9 +21,16 @@ private:
 
 	// Outputs the log message to the game runtime log file.
 	void OutputToFile(const std::string_view& msg, Severity severity) const;
-public:
+private:
 	LogSystem();
+public:
+	LogSystem(const LogSystem& other) = delete;
+	LogSystem(LogSystem&& temp) noexcept = delete;
+
 	~LogSystem();
+
+	LogSystem& operator=(const LogSystem& other) = delete;
+	LogSystem& operator=(LogSystem&& temp) noexcept = delete;
 
 	// Outputs log to console if in DEBUG mode, else logs are outputted to the game runtime file.
 	void OutputLog(const std::string_view& msg, Severity severity) const;
