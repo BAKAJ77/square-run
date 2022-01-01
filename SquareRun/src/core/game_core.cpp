@@ -4,6 +4,7 @@
 #include <util/directory_system.h>
 #include <util/timestamp.h>
 
+#include <glm/gtc/matrix_transform.hpp>
 #include <glad/glad.h>
 
 GameCore::GameCore()
@@ -45,6 +46,9 @@ GameCore::GameCore()
 	this->vao = VertexArray();
 	this->vao.PushVertexLayout<float>(0, 2, 2 * sizeof(float));
 	this->vao.InitVertexArray(this->vbo, &this->ibo);
+
+	// Initialize the camera
+	this->sceneCamera = Camera({ 0, 0 }, { 1600, 900 });
 	
 	// Execute the main game loop
 	this->MainLoop();
@@ -73,6 +77,13 @@ void GameCore::Update(const double& deltaTime)
 
 void GameCore::Render() const
 {
+	glm::mat4 model;
+	model = glm::translate(model, { 200, 200, 0 });
+	model = glm::scale(model, { 100, 100, 1 });
+
+	this->shader.BindProgram();
+	this->shader.SetUniformGLM("MVPMatrix", this->sceneCamera.GetMatrix() * model);
+
 	Renderer::GetInstance().Clear({ 0, 0, 75, 255 });
 	Renderer::GetInstance().RenderData(this->shader, this->vao, 6);
 }
