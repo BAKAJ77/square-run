@@ -1,4 +1,5 @@
 #include <core/game_core.h>
+#include <core/input_system.h>
 #include <graphics/renderer.h>
 #include <serialization/config.h>
 #include <util/directory_system.h>
@@ -72,6 +73,9 @@ void GameCore::MainLoop()
 
 void GameCore::Update(const double& deltaTime)
 {
+	if (InputSystem::GetInstance(this->window).WasKeyPressed(KeyCode::KEY_ESCAPE))
+		this->window.RequestExit();
+
 	this->window.Update();
 }
 
