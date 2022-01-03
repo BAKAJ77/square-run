@@ -1,6 +1,18 @@
 #version 330 core
 
+in VSH_OUT
+{
+	vec2 uvCoords;
+} fshIn;
+
+uniform sampler2D geometryTexture;
+uniform vec4 geometryColor;
+uniform bool enableTextureUsage;
+
 void main()
 {
-	gl_FragColor = vec4(1.0f, 0.0f, 0.0f, 1.0f);
+	if (enableTextureUsage)
+		gl_FragColor = texture(geometryTexture, fshIn.uvCoords);
+	else
+		gl_FragColor = geometryColor;
 }

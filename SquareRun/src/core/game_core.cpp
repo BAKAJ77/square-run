@@ -5,7 +5,6 @@
 #include <util/directory_system.h>
 #include <util/timestamp.h>
 
-#include <glm/gtc/matrix_transform.hpp>
 #include <glad/glad.h>
 
 GameCore::GameCore()
@@ -25,6 +24,9 @@ GameCore::GameCore()
 
 	// Load and initialize the shaders
 	this->shader = ShaderProgram("geometry.glsl.vsh", "geometry.glsl.fsh");
+
+	// Load the test texture
+	this->texture = Graphics::LoadTextureFromFile("test_texture.png");
 
 	// Initialize the camera
 	this->sceneCamera = Camera({ 0, 0 }, { 1600, 900 });
@@ -60,5 +62,5 @@ void GameCore::Update(const double& deltaTime)
 void GameCore::Render() const
 {
 	Renderer::GetInstance().Clear({ 0, 0, 75, 255 });
-	Renderer::GetInstance().RenderRect(this->shader, this->sceneCamera, { 200, 200 }, { 100, 100 });
+	Renderer::GetInstance().RenderTexturedRect(this->shader, this->sceneCamera, this->texture, { 200, 200 }, { 100, 100 });
 }
