@@ -12,10 +12,6 @@ private:
 	WindowFrame window;
 	ShaderProgram shader;
 	Camera sceneCamera;
-
-	VertexBuffer vbo;
-	VertexArray vao;
-	IndexBuffer ibo;
 private:
 	void MainLoop();
 	void Update(const double& deltaTime);
