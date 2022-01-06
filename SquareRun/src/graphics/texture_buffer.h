@@ -30,6 +30,10 @@ public:
 	// Sets the filtering technique used when rendering the texture.
 	void SetFilteringMode(uint32_t minFilter, uint32_t magFilter);
 
+	// Inserts new pixel data into the texture buffer at the buffer offset specified.
+	void UpdateBuffer(uint32_t offsetX, uint32_t offsetY, uint32_t width, uint32_t height, uint32_t format, uint32_t type, 
+		const void* pixelData);
+
 	// Binds the texture buffer object.
 	void BindBuffer() const;
 

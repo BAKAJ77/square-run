@@ -25,10 +25,12 @@ VertexArray& VertexArray::operator=(VertexArray&& temp) noexcept
 	return *this;
 }
 
-void VertexArray::InitVertexArray(const VertexBuffer& vbo, const IndexBuffer* ibo)
+void VertexArray::InitVertexArray(const VertexBuffer& vbo, const IndexBuffer* ibo, bool genNewVAO)
 {
 	// Generate the vao and bind it
-	glGenVertexArrays(1, &this->vaoID);
+	if (genNewVAO)
+		glGenVertexArrays(1, &this->vaoID);
+
 	glBindVertexArray(this->vaoID);
 
 	// Bind the vbo and ibo

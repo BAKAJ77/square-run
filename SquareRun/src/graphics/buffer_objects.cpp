@@ -7,11 +7,11 @@ VertexBuffer::VertexBuffer() :
 	vboID(0)
 {}
 
-VertexBuffer::VertexBuffer(const std::vector<float>& data, uint32_t bufferAllocSize, uint32_t bufferUsage)
+VertexBuffer::VertexBuffer(const void* data, uint32_t bufferAllocSize, uint32_t bufferUsage)
 {
 	glGenBuffers(1, &this->vboID);
 	glBindBuffer(GL_ARRAY_BUFFER, this->vboID);
-	glBufferData(GL_ARRAY_BUFFER, bufferAllocSize, data.data(), bufferUsage);
+	glBufferData(GL_ARRAY_BUFFER, bufferAllocSize, data, bufferUsage);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
@@ -33,10 +33,10 @@ VertexBuffer& VertexBuffer::operator=(VertexBuffer&& temp) noexcept
 	return *this;
 }
 
-void VertexBuffer::UpdateBuffer(const std::vector<float>& data, uint32_t bufferOffset)
+void VertexBuffer::UpdateBuffer(const void* data, uint32_t dataSize, uint32_t bufferOffset)
 {
 	glBindBuffer(GL_ARRAY_BUFFER, this->vboID);
-	glBufferSubData(GL_ARRAY_BUFFER, bufferOffset, data.size(), data.data());
+	glBufferSubData(GL_ARRAY_BUFFER, bufferOffset, dataSize, data);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
@@ -61,11 +61,11 @@ IndexBuffer::IndexBuffer() :
 	iboID(0)
 {}
 
-IndexBuffer::IndexBuffer(const std::vector<uint32_t>& data, uint32_t bufferAllocSize, uint32_t bufferUsage)
+IndexBuffer::IndexBuffer(const void* data, uint32_t bufferAllocSize, uint32_t bufferUsage)
 {
 	glGenBuffers(1, &this->iboID);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->iboID);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, bufferAllocSize, data.data(), bufferUsage);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, bufferAllocSize, data, bufferUsage);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
@@ -87,10 +87,10 @@ IndexBuffer& IndexBuffer::operator=(IndexBuffer&& temp) noexcept
 	return *this;
 }
 
-void IndexBuffer::UpdateBuffer(const std::vector<uint32_t>& data, uint32_t bufferOffset)
+void IndexBuffer::UpdateBuffer(const void* data, uint32_t dataSize, uint32_t bufferOffset)
 {
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->iboID);
-	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, bufferOffset, data.size(), data.data());
+	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, bufferOffset, dataSize, data);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 

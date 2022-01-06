@@ -43,7 +43,7 @@ public:
 		uint32_t divisor, bool normalized);
 
 	// Generates and sets up the VAO, attaching the given buffer objects and configuring the vertex attribute pointers.
-	void InitVertexArray(const VertexBuffer& vbo, const IndexBuffer* ibo = nullptr);
+	void InitVertexArray(const VertexBuffer& vbo, const IndexBuffer* ibo = nullptr, bool genNewVAO = true);
 
 	// Binds the vertex array object.
 	void BindObject() const;

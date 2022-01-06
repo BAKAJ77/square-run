@@ -6,15 +6,17 @@
 #include <graphics/vertex_array.h>
 #include <graphics/camera_view.h>
 #include <graphics/texture_buffer.h>
+#include <graphics/font_loader.h>
 
 class GameCore
 {
 private:
 	WindowFrame window;
-	ShaderProgram shader;
+	ShaderProgram geometryShader, textShader;
 	Camera sceneCamera;
 
 	TextureBuffer texture;
+	Font cascadiaFont;
 private:
 	void MainLoop();
 	void Update(const double& deltaTime);

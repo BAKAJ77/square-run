@@ -81,6 +81,14 @@ void TextureBuffer::SetFilteringMode(uint32_t minFilter, uint32_t magFilter)
 	glBindTexture(this->target, 0);
 }
 
+void TextureBuffer::UpdateBuffer(uint32_t offsetX, uint32_t offsetY, uint32_t width, uint32_t height, uint32_t format,
+	uint32_t type, const void* pixelData)
+{
+	glBindTexture(this->target, this->tboID);
+	glTexSubImage2D(this->target, 0, offsetX, offsetY, width, height, format, type, pixelData);
+	glBindTexture(this->target, 0);
+}
+
 void TextureBuffer::BindBuffer() const
 {
 	glBindTexture(this->target, this->tboID);

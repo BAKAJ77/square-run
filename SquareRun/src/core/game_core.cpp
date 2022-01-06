@@ -23,10 +23,14 @@ GameCore::GameCore()
 	this->window = WindowFrame(width, height, fullscreen, resizable, vsync);
 
 	// Load and initialize the shaders
-	this->shader = ShaderProgram("geometry.glsl.vsh", "geometry.glsl.fsh");
+	this->geometryShader = ShaderProgram("geometry.glsl.vsh", "geometry.glsl.fsh");
+	this->textShader = ShaderProgram("text.glsl.vsh", "text.glsl.fsh");
 
 	// Load the test texture
 	this->texture = Graphics::LoadTextureFromFile("test_texture.png");
+
+	// Load the cascadia font
+	this->cascadiaFont = Font("cascadia_code_bold.ttf", 100);
 
 	// Initialize the camera
 	this->sceneCamera = Camera({ 0, 0 }, { 1600, 900 });
@@ -62,5 +66,12 @@ void GameCore::Update(const double& deltaTime)
 void GameCore::Render() const
 {
 	Renderer::GetInstance().Clear({ 0, 0, 75, 255 });
-	Renderer::GetInstance().RenderTexturedRect(this->shader, this->sceneCamera, this->texture, { 200, 200 }, { 100, 100 });
+	Renderer::GetInstance().RenderRect(this->geometryShader, this->sceneCamera, { 0, 255, 0, 255 }, { 200, 200 }, { 100, 100 });
+	Renderer::GetInstance().RenderTexturedRect(this->geometryShader, this->sceneCamera, this->texture, { 500, 500 }, { 250, 250 }, 70);
+	Renderer::GetInstance().RenderTriangle(this->geometryShader, this->sceneCamera, { 255, 0, 0, 255 }, { 900, 300 }, { 175, 175 });
+	Renderer::GetInstance().RenderTexturedTriangle(this->geometryShader, this->sceneCamera, this->texture, { 1300, 700 }, 
+		{ 300, 300 }, 30);
+
+	Renderer::GetInstance().RenderText(this->textShader, this->sceneCamera, this->cascadiaFont, 100, "Testing...",
+		{ 0, 255, 0, 255 }, { 400, 400 });
 }

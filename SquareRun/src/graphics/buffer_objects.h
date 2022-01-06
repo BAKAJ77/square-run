@@ -9,7 +9,7 @@ private:
 	uint32_t vboID;
 public:
 	VertexBuffer();
-	VertexBuffer(const std::vector<float>& data, uint32_t bufferAllocSize, uint32_t bufferUsage);
+	VertexBuffer(const void* data, uint32_t bufferAllocSize, uint32_t bufferUsage);
 	VertexBuffer(const VertexBuffer& other) = delete;
 	VertexBuffer(VertexBuffer&& temp) noexcept;
 
@@ -19,7 +19,7 @@ public:
 	VertexBuffer& operator=(VertexBuffer&& temp) noexcept;
 
 	// Inserts new data into the vertex buffer at the buffer offset specified.
-	void UpdateBuffer(const std::vector<float>& data, uint32_t bufferOffset);
+	void UpdateBuffer(const void* data, uint32_t dataSize, uint32_t bufferOffset);
 
 	// Binds the vertex buffer.
 	void BindBuffer() const;
@@ -37,7 +37,7 @@ private:
 	uint32_t iboID;
 public:
 	IndexBuffer();
-	IndexBuffer(const std::vector<uint32_t>& data, uint32_t bufferAllocSize, uint32_t bufferUsage);
+	IndexBuffer(const void* data, uint32_t bufferAllocSize, uint32_t bufferUsage);
 	IndexBuffer(const IndexBuffer& other) = delete;
 	IndexBuffer(IndexBuffer&& temp) noexcept;
 
@@ -47,7 +47,7 @@ public:
 	IndexBuffer& operator=(IndexBuffer&& temp) noexcept;
 
 	// Inserts new data into the index buffer at the buffer offset specified.
-	void UpdateBuffer(const std::vector<uint32_t>& data, uint32_t bufferOffset);
+	void UpdateBuffer(const void* data, uint32_t dataSize, uint32_t bufferOffset);
 
 	// Binds the index buffer.
 	void BindBuffer() const;
