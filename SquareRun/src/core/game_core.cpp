@@ -25,7 +25,7 @@ GameCore::GameCore()
 	// Load and initialize the shaders
 	this->geometryShader = ShaderProgram("geometry.glsl.vsh", "geometry.glsl.fsh");
 	this->textShader = ShaderProgram("text.glsl.vsh", "text.glsl.fsh");
-
+	
 	// Load the test texture
 	this->texture = Graphics::LoadTextureFromFile("test_texture.png");
 
@@ -65,6 +65,8 @@ void GameCore::Update(const double& deltaTime)
 
 void GameCore::Render() const
 {
+	Renderer::GetInstance().SetRenderTarget(RenderTarget::SCENE_FRAMEBUFFER);
+	
 	Renderer::GetInstance().Clear({ 0, 0, 75, 255 });
 	Renderer::GetInstance().RenderRect(this->geometryShader, this->sceneCamera, { 0, 255, 0, 255 }, { 200, 200 }, { 100, 100 });
 	Renderer::GetInstance().RenderTexturedRect(this->geometryShader, this->sceneCamera, this->texture, { 500, 500 }, { 250, 250 }, 70);
@@ -74,4 +76,6 @@ void GameCore::Render() const
 
 	Renderer::GetInstance().RenderText(this->textShader, this->sceneCamera, this->cascadiaFont, 100, "Testing...",
 		{ 0, 255, 0, 255 }, { 400, 400 });
+
+	Renderer::GetInstance().FlushRenderedScene();
 }

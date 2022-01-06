@@ -1,4 +1,6 @@
 #include <graphics/renderer.h>
+#include <serialization/config.h>
+#include <util/logging_system.h>
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <glad/glad.h>
@@ -41,6 +43,17 @@ Renderer::Renderer()
 	this->triangleVAO.PushVertexLayout<float>(0, 2, 4 * sizeof(float));
 	this->triangleVAO.PushVertexLayout<float>(1, 2, 4 * sizeof(float), 2 * sizeof(float));
 	this->triangleVAO.InitVertexArray(this->triangleVBO);
+
+	// Create and setup the post-processing requisites (the framebuffer, output texture and shader program)
+	const int numSamplesMSAA = Serialization::GetConfigElement<int>("graphics", "numSamplesMSAA");
+	const std::vector<int> resolution = Serialization::GetConfigElement<std::vector<int>>("graphics", "resolution");
+	if (resolution.size() < 2)
+		LogSystem::GetInstance().OutputLog("The json setting 'resolution' is invalid", Severity::FATAL);
+
+	this->postProcessShader = ShaderProgram("post_process.glsl.vsh", "post_process.glsl.fsh");
+	this->postProcessSceneTexture = TextureBuffer(GL_TEXTURE_2D_MULTISAMPLE, numSamplesMSAA, GL_RGBA, resolution[0], resolution[1]);
+	this->postProcessFBO.GenerateFrameBuffer();
+	this->postProcessFBO.AttachTextureBuffer(GL_COLOR_ATTACHMENT0, this->postProcessSceneTexture);
 }
 
 Renderer::~Renderer() = default;
@@ -134,10 +147,44 @@ BatchedData Renderer::GenerateBatchedTextData(const Font& font, const std::strin
 	return { vertexData, indexData };
 }
 
+void Renderer::SetExternalRenderTarget(const FrameBuffer& fbo)
+{
+	this->externalFBO = &fbo;
+}
+
+void Renderer::SetRenderTarget(RenderTarget target) const
+{
+	switch (target)
+	{
+	case RenderTarget::DEFAULT_FRAMEBUFFER:
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		break;
+	case RenderTarget::SCENE_FRAMEBUFFER:
+		this->postProcessFBO.BindBuffer();
+		break;
+	case RenderTarget::EXTERNAL_FRAMEBUFFER:
+		if (this->externalFBO)
+			this->externalFBO->BindBuffer();
+		break;
+	}
+}
+
 void Renderer::Clear(const glm::vec4& color) const
 {
 	glClearColor(color.r / 255.0f, color.g / 255.0f, color.b / 255.0f, color.a / 255.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
+}
+
+void Renderer::RenderData(const ShaderProgram& shader, const VertexArray& vao, uint32_t count) const
+{
+	// Bind the shader and VAO
+	shader.BindProgram();
+	vao.BindObject();
+
+	// Now render to the screen
+	vao.HasAttachedIBO() ?
+		glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_BYTE, nullptr) :
+		glDrawArrays(GL_TRIANGLES, 0, count);
 }
 
 void Renderer::RenderRect(const ShaderProgram& shader, const Camera& sceneCamera, const glm::vec4& color, const glm::vec2& pos,
@@ -254,6 +301,22 @@ void Renderer::RenderText(const ShaderProgram& shader, const Camera& sceneCamera
 
 	// Render the text
 	glDrawElements(GL_TRIANGLES, (uint32_t)renderData.second.size(), GL_UNSIGNED_INT, nullptr);
+}
+
+void Renderer::FlushRenderedScene() const
+{
+	this->SetRenderTarget(RenderTarget::DEFAULT_FRAMEBUFFER);
+
+	this->postProcessSceneTexture.BindBuffer(0);
+	this->postProcessShader.BindProgram();
+
+	this->postProcessShader.SetUniform("postProcessedTexture", 0);
+	this->postProcessShader.SetUniform("numSamples", 4);
+	this->postProcessShader.SetUniformGLM("framebufferSize", { this->postProcessSceneTexture.GetWidth(), 
+		this->postProcessSceneTexture.GetHeight() });
+
+	Renderer::GetInstance().Clear({ 0, 0, 0, 255 });
+	Renderer::GetInstance().RenderData(this->postProcessShader, this->rectVAO, 6);
 }
 
 Renderer& Renderer::GetInstance()

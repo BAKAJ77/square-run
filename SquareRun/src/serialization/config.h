@@ -38,7 +38,7 @@ namespace Serialization
 			const nlohmann::json loadedJSON = nlohmann::json::parse(jsonData, nullptr, true, true);
 
 			// Retrieve and return the requested json element
-			elementData = loadedJSON.at(elementGroupKey.data()).at(elementKey.data());
+			elementData = loadedJSON.at(elementGroupKey.data()).at(elementKey.data()).get<Ty>();
 		}
 		catch (nlohmann::json::exception& exception) // Catch potential json exceptions thrown
 		{

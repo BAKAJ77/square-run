@@ -11,6 +11,13 @@
 
 using BatchedData = std::pair<std::vector<float>, std::vector<uint32_t>>;
 
+enum class RenderTarget
+{
+	DEFAULT_FRAMEBUFFER, // This is what is ultimately displayed to the screen, the post-processed scene texture is rendered here
+	SCENE_FRAMEBUFFER, // This is where the scene is rendered to, contains the texture of the rendered scene
+	EXTERNAL_FRAMEBUFFER // A framebuffer that's defined outside of the renderer
+};
+
 struct GeometryData
 {
 	glm::vec2 position, size;
@@ -22,6 +29,12 @@ class Renderer
 private:
 	VertexBuffer rectVBO, triangleVBO;
 	VertexArray rectVAO, triangleVAO;
+
+	ShaderProgram postProcessShader;
+	TextureBuffer postProcessSceneTexture;
+	FrameBuffer postProcessFBO;
+
+	const FrameBuffer* externalFBO;
 private:
 	// Returns a generated model matrix.
 	glm::mat4 GenerateModelMatrix(const glm::vec2& pos, const glm::vec2& size, float rotationAngle) const;
@@ -41,8 +54,19 @@ public:
 	Renderer& operator=(const Renderer& other) = delete;
 	Renderer& operator=(Renderer&& temp) = delete;
 
+	// Sets the external render target (aka framebuffer).
+	// This allows for framebuffers, defined outside the renderer, to be rendered to by the renderer.
+	void SetExternalRenderTarget(const FrameBuffer& fbo);
+
+	// Sets the current render target (aka framebuffer), consequent render calls will only modify the contents of this render target.
+	void SetRenderTarget(RenderTarget target) const;
+
 	// Clears the screen and fills the screen with the specified color.
 	void Clear(const glm::vec4& color) const;
+
+	// Uses the vertex (and index) data attached via buffer objects to the vertex array object to render to the screen.
+	// The last parameter 'count' specifies the number of vertices/indices in the data being rendered.
+	void RenderData(const ShaderProgram& shader, const VertexArray& vao, uint32_t count) const;
 
 	// Renders a colored rectangle of specified size to the position specified on the screen.
 	// Note: The origin of transformations, in relation to the rectangle being rendered, is it's centre.
@@ -68,6 +92,9 @@ public:
 	// Note: The origin of transformations, in relation to the triangle being rendered, is it's centre.
 	void RenderText(const ShaderProgram& shader, const Camera& sceneCamera, const Font& font, uint32_t fontSize,
 		const std::string_view& text, const glm::vec4& color, const glm::vec2& pos, float rotationAngle = 0.0f) const;
+
+	// Renders and displays the final rendered and post-processed scene.
+	void FlushRenderedScene() const;
 
 	// Returns singleton instance object of this class.
 	static Renderer& GetInstance();

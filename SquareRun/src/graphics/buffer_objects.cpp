@@ -1,7 +1,10 @@
 #include <graphics/buffer_objects.h>
+#include <graphics/texture_buffer.h>
+#include <util/logging_system.h>
+
 #include <glad/glad.h>
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 VertexBuffer::VertexBuffer() :
 	vboID(0)
@@ -55,7 +58,7 @@ const uint32_t& VertexBuffer::GetID() const
 	return this->vboID;
 }
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 IndexBuffer::IndexBuffer() :
 	iboID(0)
@@ -109,4 +112,60 @@ const uint32_t& IndexBuffer::GetID() const
 	return this->iboID;
 }
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+FrameBuffer::FrameBuffer() :
+	fboID(0)
+{}
+
+FrameBuffer::FrameBuffer(FrameBuffer && temp) noexcept :
+	fboID(temp.fboID)
+{
+	temp.fboID = 0;
+}
+
+FrameBuffer::~FrameBuffer()
+{
+	glDeleteFramebuffers(1, &this->fboID);
+}
+
+FrameBuffer& FrameBuffer::operator=(FrameBuffer&& temp) noexcept
+{
+	this->fboID = temp.fboID;
+	temp.fboID = 0;
+	return *this;
+}
+
+void FrameBuffer::GenerateFrameBuffer()
+{
+	glGenFramebuffers(1, &this->fboID);
+}
+
+void FrameBuffer::AttachTextureBuffer(uint32_t attachment, const TextureBuffer& texture)
+{
+	glBindFramebuffer(GL_FRAMEBUFFER, this->fboID);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, attachment, texture.GetTarget(), texture.GetID(), 0);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+void FrameBuffer::BindBuffer() const
+{
+	glBindFramebuffer(GL_FRAMEBUFFER, this->fboID);
+}
+
+void FrameBuffer::UnbindBuffer() const
+{
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+#ifdef _DEBUG
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+		LogSystem::GetInstance().OutputLog("The framebuffer bound is not complete", Severity::WARNING);
+#endif
+}
+
+const uint32_t& FrameBuffer::GetID() const
+{
+	return this->fboID;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

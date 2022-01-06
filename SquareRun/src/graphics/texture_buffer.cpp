@@ -23,7 +23,8 @@ TextureBuffer::TextureBuffer(uint32_t target, int internalFormat, uint32_t width
 	glBindTexture(target, 0);
 }
 
-TextureBuffer::TextureBuffer(uint32_t target, uint32_t numSamples, uint32_t internalFormat, uint32_t width, uint32_t height)
+TextureBuffer::TextureBuffer(uint32_t target, uint32_t numSamples, uint32_t internalFormat, uint32_t width, uint32_t height) :
+	width(width), height(height), target(target)
 {
 	// Generate a new texture buffer object and bind it
 	glGenTextures(1, &this->tboID);

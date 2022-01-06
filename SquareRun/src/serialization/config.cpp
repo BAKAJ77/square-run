@@ -20,6 +20,12 @@ namespace Serialization
 					{ "resizable", false },
 					{ "vsync", false }
 				}
+			},
+			{ "graphics",
+				{
+					{ "resolution", { 1600, 900 } },
+					{ "numSamplesMSAA", 1 }
+				}
 			}
 		};
 

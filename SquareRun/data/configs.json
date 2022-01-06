@@ -1,4 +1,11 @@
 {
+    "graphics": {
+        "numSamplesMSAA": 1,
+        "resolution": [
+            1600,
+            900
+        ]
+    },
     "window": {
         "fullscreen": false,
         "height": 900,
