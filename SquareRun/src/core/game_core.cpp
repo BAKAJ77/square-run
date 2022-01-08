@@ -1,5 +1,6 @@
 #include <core/game_core.h>
 #include <core/input_system.h>
+#include <core/collision_detection.h>
 #include <graphics/renderer.h>
 #include <serialization/config.h>
 #include <util/directory_system.h>
@@ -55,10 +56,33 @@ void GameCore::MainLoop()
 	}
 }
 
+float x = 0, y = 0;
+CollisionRect playerCollider({ x, y }, { 100, 100 });
+CollisionRect otherCollider({ 800, 300 }, { 250, 250 });
+
 void GameCore::Update(const double& deltaTime)
 {
 	if (InputSystem::GetInstance(this->window).WasKeyPressed(KeyCode::KEY_ESCAPE))
 		this->window.RequestExit();
+
+	if (InputSystem::GetInstance(this->window).WasKeyPressed(KeyCode::KEY_W))
+		y -= 500 * deltaTime;
+	else if (InputSystem::GetInstance(this->window).WasKeyPressed(KeyCode::KEY_S))
+		y += 500 * deltaTime;
+	if (InputSystem::GetInstance(this->window).WasKeyPressed(KeyCode::KEY_A))
+		x -= 500 * deltaTime;
+	else if (InputSystem::GetInstance(this->window).WasKeyPressed(KeyCode::KEY_D))
+		x += 500 * deltaTime;
+
+	playerCollider.SetPosition({ x, y });
+	if (playerCollider.IsColliding(otherCollider) == CollidingSide::LEFT)
+		std::printf("Left side colliding\n");
+	else if (playerCollider.IsColliding(otherCollider) == CollidingSide::RIGHT)
+		std::printf("Right side colliding\n");
+	else if (playerCollider.IsColliding(otherCollider) == CollidingSide::TOP)
+		std::printf("Top side colliding\n");
+	else if (playerCollider.IsColliding(otherCollider) == CollidingSide::BOTTOM)
+		std::printf("Bottom side colliding\n");
 
 	this->window.Update();
 }
@@ -66,16 +90,11 @@ void GameCore::Update(const double& deltaTime)
 void GameCore::Render() const
 {
 	Renderer::GetInstance().SetRenderTarget(RenderTarget::SCENE_FRAMEBUFFER);
-	
 	Renderer::GetInstance().Clear({ 0, 0, 75, 255 });
-	Renderer::GetInstance().RenderRect(this->geometryShader, this->sceneCamera, { 0, 255, 0, 255 }, { 200, 200 }, { 100, 100 });
-	Renderer::GetInstance().RenderTexturedRect(this->geometryShader, this->sceneCamera, this->texture, { 500, 500 }, { 250, 250 }, 70);
-	Renderer::GetInstance().RenderTriangle(this->geometryShader, this->sceneCamera, { 255, 0, 0, 255 }, { 900, 300 }, { 175, 175 });
-	Renderer::GetInstance().RenderTexturedTriangle(this->geometryShader, this->sceneCamera, this->texture, { 1300, 700 }, 
-		{ 300, 300 }, 30);
 
-	Renderer::GetInstance().RenderText(this->textShader, this->sceneCamera, this->cascadiaFont, 100, "Testing...",
-		{ 0, 255, 0, 255 }, { 400, 400 });
+	Renderer::GetInstance().RenderRect(this->geometryShader, this->sceneCamera, { 255, 0, 0, 255 }, { 800, 300 }, { 250, 250 });
+
+	Renderer::GetInstance().RenderRect(this->geometryShader, this->sceneCamera, { 0, 255, 0, 255 }, { x, y }, { 100, 100 });
 
 	Renderer::GetInstance().FlushRenderedScene();
 }

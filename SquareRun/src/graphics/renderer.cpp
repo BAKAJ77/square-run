@@ -45,13 +45,15 @@ Renderer::Renderer()
 	this->triangleVAO.InitVertexArray(this->triangleVBO);
 
 	// Create and setup the post-processing requisites (the framebuffer, output texture and shader program)
-	const int numSamplesMSAA = Serialization::GetConfigElement<int>("graphics", "numSamplesMSAA");
+	this->numSamplesMSAA = Serialization::GetConfigElement<int>("graphics", "numSamplesMSAA");
 	const std::vector<int> resolution = Serialization::GetConfigElement<std::vector<int>>("graphics", "resolution");
 	if (resolution.size() < 2)
 		LogSystem::GetInstance().OutputLog("The json setting 'resolution' is invalid", Severity::FATAL);
 
 	this->postProcessShader = ShaderProgram("post_process.glsl.vsh", "post_process.glsl.fsh");
-	this->postProcessSceneTexture = TextureBuffer(GL_TEXTURE_2D_MULTISAMPLE, numSamplesMSAA, GL_RGBA, resolution[0], resolution[1]);
+	this->postProcessSceneTexture = TextureBuffer(GL_TEXTURE_2D_MULTISAMPLE, this->numSamplesMSAA, GL_RGBA, resolution[0], 
+		resolution[1]);
+
 	this->postProcessFBO.GenerateFrameBuffer();
 	this->postProcessFBO.AttachTextureBuffer(GL_COLOR_ATTACHMENT0, this->postProcessSceneTexture);
 }
@@ -195,7 +197,8 @@ void Renderer::RenderRect(const ShaderProgram& shader, const Camera& sceneCamera
 	this->rectVAO.BindObject();
 
 	// Generate the model matrix
-	const glm::mat4 modelMatrix = this->GenerateModelMatrix(pos, size, rotationAngle);
+	const glm::vec2 position = pos + glm::vec2((size.x / 2.0f), (size.y / 2.0f));
+	const glm::mat4 modelMatrix = this->GenerateModelMatrix(position, size, rotationAngle);
 
 	// Assign required shader uniform values
 	shader.SetUniform("enableTextureUsage", false);
@@ -215,7 +218,8 @@ void Renderer::RenderTriangle(const ShaderProgram& shader, const Camera& sceneCa
 	this->triangleVAO.BindObject();
 
 	// Generate the model matrix
-	const glm::mat4 modelMatrix = this->GenerateModelMatrix(pos, size, rotationAngle);
+	const glm::vec2 position = pos + glm::vec2((size.x / 2.0f), (size.y / 2.0f));
+	const glm::mat4 modelMatrix = this->GenerateModelMatrix(position, size, rotationAngle);
 
 	// Assign required shader uniform values
 	shader.SetUniform("enableTextureUsage", false);
@@ -236,7 +240,8 @@ void Renderer::RenderTexturedRect(const ShaderProgram& shader, const Camera& sce
 	this->rectVAO.BindObject();
 
 	// Generate the model matrix
-	const glm::mat4 modelMatrix = this->GenerateModelMatrix(pos, size, rotationAngle);
+	const glm::vec2 position = pos + glm::vec2((size.x / 2.0f), (size.y / 2.0f));
+	const glm::mat4 modelMatrix = this->GenerateModelMatrix(position, size, rotationAngle);
 
 	// Assign required shader uniform values
 	shader.SetUniform("geometryTexture", 0);
@@ -257,7 +262,8 @@ void Renderer::RenderTexturedTriangle(const ShaderProgram& shader, const Camera&
 	this->triangleVAO.BindObject();
 
 	// Generate the model matrix
-	const glm::mat4 modelMatrix = this->GenerateModelMatrix(pos, size, rotationAngle);
+	const glm::vec2 position = pos + glm::vec2((size.x / 2.0f), (size.y / 2.0f));
+	const glm::mat4 modelMatrix = this->GenerateModelMatrix(position, size, rotationAngle);
 
 	// Assign required shader uniform values
 	shader.SetUniform("geometryTexture", 0);
@@ -311,11 +317,10 @@ void Renderer::FlushRenderedScene() const
 	this->postProcessShader.BindProgram();
 
 	this->postProcessShader.SetUniform("postProcessedTexture", 0);
-	this->postProcessShader.SetUniform("numSamples", 4);
+	this->postProcessShader.SetUniform("numSamples", (int)this->numSamplesMSAA);
 	this->postProcessShader.SetUniformGLM("framebufferSize", { this->postProcessSceneTexture.GetWidth(), 
 		this->postProcessSceneTexture.GetHeight() });
 
-	Renderer::GetInstance().Clear({ 0, 0, 0, 255 });
 	Renderer::GetInstance().RenderData(this->postProcessShader, this->rectVAO, 6);
 }
 

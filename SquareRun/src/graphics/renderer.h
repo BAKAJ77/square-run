@@ -35,6 +35,7 @@ private:
 	FrameBuffer postProcessFBO;
 
 	const FrameBuffer* externalFBO;
+	uint32_t numSamplesMSAA;
 private:
 	// Returns a generated model matrix.
 	glm::mat4 GenerateModelMatrix(const glm::vec2& pos, const glm::vec2& size, float rotationAngle) const;
@@ -69,27 +70,27 @@ public:
 	void RenderData(const ShaderProgram& shader, const VertexArray& vao, uint32_t count) const;
 
 	// Renders a colored rectangle of specified size to the position specified on the screen.
-	// Note: The origin of transformations, in relation to the rectangle being rendered, is it's centre.
+	// Note: The origin of transformations, in relation to the rectangle being rendered, is the top left corner of the rectangle.
 	void RenderRect(const ShaderProgram& shader, const Camera& sceneCamera, const glm::vec4& color, const glm::vec2& pos, 
 		const glm::vec2& size, float rotationAngle = 0.0f) const;
 
 	// Renders a colored triangle of specified size to the position specified on the screen.
-	// Note: The origin of transformations, in relation to the triangle being rendered, is it's centre.
+	// Note: The origin of transformations, in relation to the rectangle being rendered, is the top left corner of the rectangle.
 	void RenderTriangle(const ShaderProgram& shader, const Camera& sceneCamera, const glm::vec4& color, const glm::vec2& pos,
 		const glm::vec2& size, float rotationAngle = 0.0f) const;
 
 	// Renders a textured rectangle of specified size to the position specified on the screen.
-	// Note: The origin of transformations, in relation to the rectangle being rendered, is it's centre.
+	// Note: The origin of transformations, in relation to the rectangle being rendered, is the top left corner of the rectangle.
 	void RenderTexturedRect(const ShaderProgram& shader, const Camera& sceneCamera, const TextureBuffer& texture,
 		const glm::vec2& pos, const glm::vec2& size, float rotationAngle = 0.0f) const;
 
 	// Renders a textured triangle of specified size to the position specified on the screen.
-	// Note: The origin of transformations, in relation to the triangle being rendered, is it's centre.
+	// Note: The origin of transformations, in relation to the rectangle being rendered, is the top left corner of the rectangle.
 	void RenderTexturedTriangle(const ShaderProgram& shader, const Camera& sceneCamera, const TextureBuffer& texture,
 		const glm::vec2& pos, const glm::vec2& size, float rotationAngle = 0.0f) const;
 
 	// Renders a colored text of specified size to the position specified on the screen.
-	// Note: The origin of transformations, in relation to the triangle being rendered, is it's centre.
+	// Note: The origin of transformations, in relation to the rectangle being rendered, is the top left corner of the rectangle.
 	void RenderText(const ShaderProgram& shader, const Camera& sceneCamera, const Font& font, uint32_t fontSize,
 		const std::string_view& text, const glm::vec4& color, const glm::vec2& pos, float rotationAngle = 0.0f) const;
 
