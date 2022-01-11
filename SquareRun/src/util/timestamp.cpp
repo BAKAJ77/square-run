@@ -51,13 +51,4 @@ namespace Util
 
 		return generatedTimestamp;
 	}
-
-	double GetSecondsSinceEpoch()
-	{
-		static_assert(std::is_integral<std::chrono::system_clock::rep>::value, 
-			"Representation of ticks isn't an integral value.");
-
-		auto now = std::chrono::high_resolution_clock::now().time_since_epoch();
-		return std::chrono::duration_cast<std::chrono::duration<double>>(now).count();
-	}
 }

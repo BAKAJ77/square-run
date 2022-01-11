@@ -24,7 +24,8 @@ namespace Serialization
 			{ "graphics",
 				{
 					{ "resolution", { 1600, 900 } },
-					{ "numSamplesMSAA", 1 }
+					{ "numSamplesMSAA", 1 },
+					{ "gamma", 2.2f }
 				}
 			}
 		};
