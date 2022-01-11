@@ -1,8 +1,9 @@
 #ifndef INPUT_SYSTEM_H
 #define INPUT_SYSTEM_H
 
-#include <core/window.h>
 #include <glm/glm.hpp>
+
+class WindowFrame;
 
 // Key codes extracted from the GLFW 3 source code.
 enum class KeyCode : int
@@ -155,9 +156,9 @@ enum class MouseCode
 class InputSystem
 {
 private:
-	const WindowFrame& window;
+	const WindowFrame* window;
 private:
-	InputSystem(const WindowFrame& window);
+	InputSystem();
 public:
 	InputSystem(const InputSystem& other) = delete;
 	InputSystem(InputSystem&& temp) = delete;
@@ -166,6 +167,9 @@ public:
 
 	InputSystem& operator=(const InputSystem& other) = delete;
 	InputSystem& operator=(InputSystem&& temp) = delete;
+
+	// Initialize the input system.
+	void Init(const WindowFrame& window);
 
 	// Returns TRUE if the key specified was pressed, else FALSE is returned.
 	bool WasKeyPressed(KeyCode key) const;
@@ -177,7 +181,7 @@ public:
 	glm::vec2 GetMouseCursorPosition() const;
 
 	// Returns singleton instance object of this class.
-	static InputSystem& GetInstance(const WindowFrame& window);
+	static InputSystem& GetInstance();
 };
 
 #endif

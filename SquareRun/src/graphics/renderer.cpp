@@ -1,6 +1,7 @@
 #include <graphics/renderer.h>
 #include <serialization/config.h>
 #include <util/logging_system.h>
+#include <core/window.h>
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <glad/glad.h>
@@ -46,12 +47,13 @@ Renderer::Renderer()
 
 	// Create and setup the post-processing requisites (the framebuffer, output texture and shader program)
 	this->numSamplesMSAA = Serialization::GetConfigElement<int>("graphics", "numSamplesMSAA");
+	this->gammaFactor = Serialization::GetConfigElement<float>("graphics", "gamma");
 	const std::vector<int> resolution = Serialization::GetConfigElement<std::vector<int>>("graphics", "resolution");
 	if (resolution.size() < 2)
 		LogSystem::GetInstance().OutputLog("The json setting 'resolution' is invalid", Severity::FATAL);
 
 	this->postProcessShader = ShaderProgram("post_process.glsl.vsh", "post_process.glsl.fsh");
-	this->postProcessSceneTexture = TextureBuffer(GL_TEXTURE_2D_MULTISAMPLE, this->numSamplesMSAA, GL_RGBA, resolution[0], 
+	this->postProcessSceneTexture = TextureBuffer(GL_TEXTURE_2D_MULTISAMPLE, this->numSamplesMSAA, GL_SRGB_ALPHA, resolution[0], 
 		resolution[1]);
 
 	this->postProcessFBO.GenerateFrameBuffer();
@@ -149,6 +151,11 @@ BatchedData Renderer::GenerateBatchedTextData(const Font& font, const std::strin
 	return { vertexData, indexData };
 }
 
+void Renderer::Init(const WindowFrame& window)
+{
+	this->window = &window;
+}
+
 void Renderer::SetExternalRenderTarget(const FrameBuffer& fbo)
 {
 	this->externalFBO = &fbo;
@@ -160,9 +167,11 @@ void Renderer::SetRenderTarget(RenderTarget target) const
 	{
 	case RenderTarget::DEFAULT_FRAMEBUFFER:
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glViewport(0, 0, this->window->GetWidth(), this->window->GetHeight());
 		break;
 	case RenderTarget::SCENE_FRAMEBUFFER:
 		this->postProcessFBO.BindBuffer();
+		glViewport(0, 0, this->postProcessSceneTexture.GetWidth(), this->postProcessSceneTexture.GetHeight());
 		break;
 	case RenderTarget::EXTERNAL_FRAMEBUFFER:
 		if (this->externalFBO)
@@ -197,8 +206,7 @@ void Renderer::RenderRect(const ShaderProgram& shader, const Camera& sceneCamera
 	this->rectVAO.BindObject();
 
 	// Generate the model matrix
-	const glm::vec2 position = pos + glm::vec2((size.x / 2.0f), (size.y / 2.0f));
-	const glm::mat4 modelMatrix = this->GenerateModelMatrix(position, size, rotationAngle);
+	const glm::mat4 modelMatrix = this->GenerateModelMatrix(pos, size, rotationAngle);
 
 	// Assign required shader uniform values
 	shader.SetUniform("enableTextureUsage", false);
@@ -218,8 +226,7 @@ void Renderer::RenderTriangle(const ShaderProgram& shader, const Camera& sceneCa
 	this->triangleVAO.BindObject();
 
 	// Generate the model matrix
-	const glm::vec2 position = pos + glm::vec2((size.x / 2.0f), (size.y / 2.0f));
-	const glm::mat4 modelMatrix = this->GenerateModelMatrix(position, size, rotationAngle);
+	const glm::mat4 modelMatrix = this->GenerateModelMatrix(pos, size, rotationAngle);
 
 	// Assign required shader uniform values
 	shader.SetUniform("enableTextureUsage", false);
@@ -240,8 +247,7 @@ void Renderer::RenderTexturedRect(const ShaderProgram& shader, const Camera& sce
 	this->rectVAO.BindObject();
 
 	// Generate the model matrix
-	const glm::vec2 position = pos + glm::vec2((size.x / 2.0f), (size.y / 2.0f));
-	const glm::mat4 modelMatrix = this->GenerateModelMatrix(position, size, rotationAngle);
+	const glm::mat4 modelMatrix = this->GenerateModelMatrix(pos, size, rotationAngle);
 
 	// Assign required shader uniform values
 	shader.SetUniform("geometryTexture", 0);
@@ -262,8 +268,7 @@ void Renderer::RenderTexturedTriangle(const ShaderProgram& shader, const Camera&
 	this->triangleVAO.BindObject();
 
 	// Generate the model matrix
-	const glm::vec2 position = pos + glm::vec2((size.x / 2.0f), (size.y / 2.0f));
-	const glm::mat4 modelMatrix = this->GenerateModelMatrix(position, size, rotationAngle);
+	const glm::mat4 modelMatrix = this->GenerateModelMatrix(pos, size, rotationAngle);
 
 	// Assign required shader uniform values
 	shader.SetUniform("geometryTexture", 0);
@@ -312,12 +317,14 @@ void Renderer::RenderText(const ShaderProgram& shader, const Camera& sceneCamera
 void Renderer::FlushRenderedScene() const
 {
 	this->SetRenderTarget(RenderTarget::DEFAULT_FRAMEBUFFER);
+	Renderer::GetInstance().Clear({ 0, 0, 0, 255 });
 
 	this->postProcessSceneTexture.BindBuffer(0);
 	this->postProcessShader.BindProgram();
 
 	this->postProcessShader.SetUniform("postProcessedTexture", 0);
 	this->postProcessShader.SetUniform("numSamples", (int)this->numSamplesMSAA);
+	this->postProcessShader.SetUniform("gammaFactor", this->gammaFactor);
 	this->postProcessShader.SetUniformGLM("framebufferSize", { this->postProcessSceneTexture.GetWidth(), 
 		this->postProcessSceneTexture.GetHeight() });
 

@@ -64,22 +64,22 @@ CollidingSide CollisionRect::IsColliding(const CollisionRect& otherRect) const
 
 float CollisionRect::GetLeftSidePosition() const
 {
-	return this->position.x;
+	return this->position.x - (this->size.x / 2.0f);
 }
 
 float CollisionRect::GetRightSidePosition() const
 {
-	return this->position.x + this->size.x;
+	return this->position.x + (this->size.x / 2.0f);
 }
 
 float CollisionRect::GetTopSidePosition() const
 {
-	return this->position.y;
+	return this->position.y - (this->size.y / 2.0f);
 }
 
 float CollisionRect::GetBottomSidePosition() const
 {
-	return this->position.y + this->size.y;
+	return this->position.y + (this->size.y / 2.0f);
 }
 
 const glm::vec2& CollisionRect::GetPosition() const
