@@ -18,8 +18,6 @@ LogSystem::LogSystem()
 #endif
 }
 
-LogSystem::~LogSystem() = default;
-
 void LogSystem::OutputToConsole(const std::string_view& msg, Severity severity) const
 {
 	HANDLE consoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -28,15 +26,15 @@ void LogSystem::OutputToConsole(const std::string_view& msg, Severity severity) 
 	{
 	case Severity::INFO:
 		SetConsoleTextAttribute(consoleHandle, 15); // Change console text color to white
-		std::cout << "[" << Util::GetTimeStampStr() << "] Info: " << msg << std::endl;
+		std::cout << "[" << Util::GetTimestampStr() << "] Info: " << msg << std::endl;
 		break;
 	case Severity::WARNING:
 		SetConsoleTextAttribute(consoleHandle, 14); // Change console text color to yellow
-		std::cout << "[" << Util::GetTimeStampStr() << "] Warning: " << msg << std::endl;
+		std::cout << "[" << Util::GetTimestampStr() << "] Warning: " << msg << std::endl;
 		break;
 	case Severity::FATAL:
 		SetConsoleTextAttribute(consoleHandle, 12); // Change console text color to red
-		std::cout << "[" << Util::GetTimeStampStr() << "] Error: " << msg << std::endl;
+		std::cout << "[" << Util::GetTimestampStr() << "] Error: " << msg << std::endl;
 		
 		std::this_thread::sleep_for(std::chrono::minutes(1)); // Pause program to allow time for fatal error to be read before exiting
 		std::exit(-1);
@@ -51,13 +49,13 @@ void LogSystem::OutputToFile(const std::string_view& msg, Severity severity) con
 	switch (severity)
 	{
 	case Severity::INFO:
-		logFile << "[" << Util::GetTimeStampStr() << "] Info: " << msg << std::endl;
+		logFile << "[" << Util::GetTimestampStr() << "] Info: " << msg << std::endl;
 		break;
 	case Severity::WARNING:
-		logFile << "[" << Util::GetTimeStampStr() << "] Warning: " << msg << std::endl;
+		logFile << "[" << Util::GetTimestampStr() << "] Warning: " << msg << std::endl;
 		break;
 	case Severity::FATAL:
-		logFile << "[" << Util::GetTimeStampStr() << "] Error: " << msg << std::endl;
+		logFile << "[" << Util::GetTimestampStr() << "] Error: " << msg << std::endl;
 		std::exit(-1);
 		break;
 	}

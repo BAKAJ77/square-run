@@ -26,8 +26,7 @@ private:
 public:
 	LogSystem(const LogSystem& other) = delete;
 	LogSystem(LogSystem&& temp) noexcept = delete;
-
-	~LogSystem();
+	~LogSystem() = default;
 
 	LogSystem& operator=(const LogSystem& other) = delete;
 	LogSystem& operator=(LogSystem&& temp) noexcept = delete;
