@@ -9,6 +9,7 @@ class SplashScreen : public GameState
 {
 private:
 	ShaderProgramPtr shader;
+	TextureBufferPtr texture;
 	VertexBufferPtr vbo;
 	VertexArrayPtr vao;
 protected:
