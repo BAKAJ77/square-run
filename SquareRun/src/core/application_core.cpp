@@ -1,5 +1,6 @@
 #include <core/application_core.h>
 #include <core/game_state.h>
+#include <core/input_system.h>
 #include <serialization/config.h>
 #include <util/directory_system.h>
 #include <util/timestamp.h>
@@ -20,6 +21,9 @@ ApplicationCore::ApplicationCore()
 
 	// Create the game window
 	this->window = Memory::CreateWindowFrame("Square Run", width, height, fullscreen, resizable, enableVsync);
+	
+	// Initialize the input system
+	InputSystem::GetInstance().Init(this->window);
 
 	// Continue onto the game's main loop with the splash screen game state being the first game state ran
 	GameStateSystem::GetInstance().PushState(SplashScreen::GetGameState());
@@ -28,7 +32,7 @@ ApplicationCore::ApplicationCore()
 
 void ApplicationCore::MainLoop()
 {
-	constexpr double timeStep = 1.0;
+	constexpr double timeStep = 0.001;
 	double accumulatedRenderTime = 0.0, elapsedRenderTime = 0.0;
 
 	while (!this->window->WasRequestedExit() && GameStateSystem::GetInstance().IsActive())
