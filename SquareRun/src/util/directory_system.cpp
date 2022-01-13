@@ -25,7 +25,7 @@ namespace Util
 		std::string directory = directoryBuffer + std::string("/SquareRun/");
 		std::replace(directory.begin(), directory.end(), '\\', '/');
 
-		if (!Serialization::IsExistingDirectory(directory))
+		if (!Util::IsExistingDirectory(directory))
 			throw std::exception("The fetched game's requisites directory does not exist");
 
 		return directory;

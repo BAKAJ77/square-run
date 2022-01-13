@@ -1,9 +1,12 @@
 #include <util/timestamp.h>
+
+#include <GLFW/glfw3.h>
 #include <type_traits>
+#include <ctime>
 
 namespace Util
 {
-	std::string GetTimeStampStr()
+	std::string GetTimestampStr()
 	{
 		// Get the current date and time data
 		std::time_t currentTime = std::time(nullptr);
@@ -50,5 +53,10 @@ namespace Util
 		}
 
 		return generatedTimestamp;
+	}
+
+	double GetSecondsSinceEpoch()
+	{
+		return glfwGetTime();
 	}
 }
