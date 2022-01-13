@@ -1,9 +1,28 @@
 #include <core/application_core.h>
+#include <core/game_state.h>
+#include <serialization/config.h>
+#include <util/directory_system.h>
 #include <util/timestamp.h>
+#include <states/splash_screen.h>
 
 ApplicationCore::ApplicationCore()
 {
-	this->window = Memory::CreateWindowFrame("Square Run", 1600, 900);
+	// Generate a new default config file if it doesn't exist
+	if (!Util::IsExistingFile(Util::GetGameRequisitesDirectory() + "data/config.json"))
+		Serialization::GenerateConfigFile();
+
+	// Retrieve the window config settings
+	const int width = Serialization::GetConfigElement<int>("window", "width");
+	const int height = Serialization::GetConfigElement<int>("window", "height");
+	const bool enableVsync = Serialization::GetConfigElement<int>("window", "vsync");
+	const bool resizable = Serialization::GetConfigElement<int>("window", "resizable");
+	const bool fullscreen = Serialization::GetConfigElement<int>("window", "fullscreen");
+
+	// Create the game window
+	this->window = Memory::CreateWindowFrame("Square Run", width, height, fullscreen, resizable, enableVsync);
+
+	// Continue onto the game's main loop with the splash screen game state being the first game state ran
+	GameStateSystem::GetInstance().PushState(SplashScreen::GetGameState());
 	this->MainLoop();
 }
 
@@ -12,7 +31,7 @@ void ApplicationCore::MainLoop()
 	constexpr double timeStep = 1.0;
 	double accumulatedRenderTime = 0.0, elapsedRenderTime = 0.0;
 
-	while (!this->window->WasRequestedExit())
+	while (!this->window->WasRequestedExit() && GameStateSystem::GetInstance().IsActive())
 	{
 		// Update the game logic
 		accumulatedRenderTime += elapsedRenderTime;
@@ -35,8 +54,10 @@ void ApplicationCore::MainLoop()
 
 void ApplicationCore::Update(const double& deltaTime)
 {
+	GameStateSystem::GetInstance().Update(deltaTime);
 }
 
 void ApplicationCore::Render() const
 {
+	GameStateSystem::GetInstance().Render();
 }

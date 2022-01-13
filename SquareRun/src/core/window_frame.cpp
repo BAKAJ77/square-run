@@ -1,8 +1,8 @@
 #include <core/window_frame.h>
 #include <util/logging_system.h>
 
-#include <GLFW/glfw3.h>
 #include <glad/glad.h>
+#include <GLFW/glfw3.h>
 
 namespace Callback
 {

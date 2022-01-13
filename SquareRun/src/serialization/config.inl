@@ -8,7 +8,7 @@ template<typename Ty> Ty Serialization::GetConfigElement(const std::string_view&
 		LogSystem::GetInstance().OutputLog("Could not find the game's data directory", Severity::FATAL);
 
 	// Open the json file and load the contents
-	std::ifstream jsonFile(directory + "configs.json");
+	std::ifstream jsonFile(directory + "config.json");
 	if (jsonFile.fail())
 		LogSystem::GetInstance().OutputLog("Couldn't open the game config file", Severity::FATAL);
 

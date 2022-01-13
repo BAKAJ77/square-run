@@ -31,7 +31,7 @@ namespace Serialization
 		};
 
 		// Write the json data to the new config file
-		std::ofstream configFile(directory + "configs.json", std::ios::trunc);
+		std::ofstream configFile(directory + "config.json", std::ios::trunc);
 		configFile << std::setw(4) << jsonObject;
 	}
 }

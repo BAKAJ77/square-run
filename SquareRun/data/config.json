@@ -1,0 +1,17 @@
+{
+    "graphics": {
+        "gamma": 2.200000047683716,
+        "numSamplesMSAA": 1,
+        "resolution": [
+            1600,
+            900
+        ]
+    },
+    "window": {
+        "fullscreen": false,
+        "height": 900,
+        "resizable": false,
+        "vsync": false,
+        "width": 1600
+    }
+}

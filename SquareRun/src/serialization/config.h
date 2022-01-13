@@ -17,4 +17,6 @@ namespace Serialization
 	template<typename Ty> Ty GetConfigElement(const std::string_view& elementGroupKey, const std::string_view& elementKey);
 }
 
+#include <serialization/config.inl>
+
 #endif
