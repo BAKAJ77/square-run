@@ -91,12 +91,35 @@ public:
 
 	// Returns the number of samples per pixel in the texture buffer.
 	// Note that in the case of non-multisample texture buffers, -1 will be returned.
-	const uint32_t& GetNumSamples() const;
+	const int& GetNumSamples() const;
+};
+
+using TextureBufferPtr = std::shared_ptr<TextureBuffer>;
+
+class FrameBuffer
+{
+private:
+	uint32_t fboID;
+public:
+	FrameBuffer();
+	~FrameBuffer();
+
+	// Attach the texture buffer to the frame buffer.
+	void AttachTextureBuffer(uint32_t attachment, const TextureBufferPtr texture);
+	
+	// Bind the frame buffer.
+	void BindBuffer() const;
+
+	// Unbinds the frame buffer.
+	void UnbindBuffer() const;
+
+	// Returns the ID of the frame buffer.
+	const uint32_t& GetID() const;
 };
 
 using VertexBufferPtr = std::shared_ptr<VertexBuffer>;
 using IndexBufferPtr = std::shared_ptr<IndexBuffer>;
-using TextureBufferPtr = std::shared_ptr<TextureBuffer>;
+using FrameBufferPtr = std::shared_ptr<FrameBuffer>;
 
 namespace Memory
 {
@@ -112,6 +135,9 @@ namespace Memory
 
 	// Returns a shared pointer to the new created texture buffer.
 	extern TextureBufferPtr CreateTextureBuffer(uint32_t target, int numSamples, uint32_t internalFormat, int width, int height);
+
+	// Returns a shared pointer to the new created frame buffer.
+	extern FrameBufferPtr CreateFrameBuffer();
 
 	// Returns a shared pointer to the new created texture buffer filled with pixel loaded from the specified image file.
 	extern TextureBufferPtr LoadTextureFromFile(const std::string_view& fileName, bool flipOnLoad = true);

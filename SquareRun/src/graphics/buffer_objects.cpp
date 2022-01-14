@@ -190,11 +190,49 @@ const uint32_t& TextureBuffer::GetHeight() const
 	return this->height;
 }
 
-const uint32_t& TextureBuffer::GetNumSamples() const
+const int& TextureBuffer::GetNumSamples() const
 {
 	return this->numSamples;
 }
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+FrameBuffer::FrameBuffer()
+{
+	glGenFramebuffers(1, &this->fboID);
+}
+
+FrameBuffer::~FrameBuffer()
+{
+	glDeleteFramebuffers(1, &this->fboID);
+}
+
+void FrameBuffer::AttachTextureBuffer(uint32_t attachment, const TextureBufferPtr texture)
+{
+	glBindFramebuffer(GL_FRAMEBUFFER, this->fboID);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, attachment, texture->GetTarget(), texture->GetID(), 0);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+void FrameBuffer::BindBuffer() const
+{
+	glBindFramebuffer(GL_FRAMEBUFFER, this->fboID);
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+		LogSystem::GetInstance().OutputLog("The framebuffer (id: " + std::to_string(this->fboID) + ") being bound is not complete.", 
+			Severity::FATAL);
+}
+
+void FrameBuffer::UnbindBuffer() const
+{
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+const uint32_t& FrameBuffer::GetID() const
+{
+	return this->fboID;
+}
+
+ 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 VertexBufferPtr Memory::CreateVertexBuffer(const void* data, uint32_t bufferAllocSize, uint32_t usage)
@@ -240,4 +278,9 @@ TextureBufferPtr Memory::LoadTextureFromFile(const std::string_view& fileName, b
 
 	return Memory::CreateTextureBuffer(GL_TEXTURE_2D, 0, textureFormat, width, height, textureFormat, GL_UNSIGNED_BYTE, pixelData,
 		true);
+}
+
+FrameBufferPtr Memory::CreateFrameBuffer()
+{
+	return std::make_shared<FrameBuffer>();
 }
