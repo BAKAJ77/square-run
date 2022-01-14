@@ -7,8 +7,10 @@ out VSH_OUT
     vec2 uvCoords;
 } vshOut;
 
+uniform mat4 cameraMatrix, modelMatrix;
+
 void main()
 {
-    gl_Position = vec4(vertexCoords, 0.0f, 1.0f);
+    gl_Position = cameraMatrix * modelMatrix * vec4(vertexCoords, 0.0f, 1.0f);
     vshOut.uvCoords = uvCoords;
 }

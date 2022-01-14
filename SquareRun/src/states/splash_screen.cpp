@@ -1,9 +1,13 @@
 #include <states/splash_screen.h>
 #include <core/input_system.h>
+
+#include <glm/gtc/matrix_transform.hpp>
 #include <glad/glad.h>
 
 void SplashScreen::Init()
 {
+	this->camera = OrthogonalCamera({ 0, 0 }, { 1600, 900 });
+
 	this->shader = Memory::CreateShaderProgram("geometry.glsl.vsh", "geometry.glsl.fsh");
 	this->postProcessShader = Memory::CreateShaderProgram("post_process.glsl.vsh", "post_process.glsl.fsh");
 
@@ -52,8 +56,14 @@ void SplashScreen::Render() const
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
 
+	glm::mat4 model;
+	model = glm::translate(model, glm::vec3(250.0f, 100.0f, 0.0f));
+	model = glm::scale(model, glm::vec3(500.0f, 200.0f, 1.0f));
+
 	this->shader->BindProgram();
 	this->shader->SetUniform("geometryTexture", 0);
+	this->shader->SetUniformGLM("cameraMatrix", this->camera.GetMatrix());
+	this->shader->SetUniformGLM("modelMatrix", model);
 	this->vao->BindObject();
 	this->texture->BindBuffer(0);
 

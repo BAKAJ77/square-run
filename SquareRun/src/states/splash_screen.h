@@ -4,6 +4,7 @@
 #include <core/game_state.h>
 #include <graphics/shader_program.h>
 #include <graphics/vertex_array.h>
+#include <graphics/orthogonal_camera.h>
 
 class SplashScreen : public GameState
 {
@@ -14,6 +15,7 @@ private:
 	VertexArrayPtr vao;
 
 	FrameBufferPtr fbo;
+	OrthogonalCamera camera;
 protected:
 	void Init() override;
 	void Destroy() override;
