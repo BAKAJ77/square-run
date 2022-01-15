@@ -1,6 +1,7 @@
 #include <core/application_core.h>
 #include <core/game_state.h>
 #include <core/input_system.h>
+#include <graphics/renderer.h>
 #include <serialization/config.h>
 #include <util/directory_system.h>
 #include <util/timestamp.h>
@@ -24,6 +25,7 @@ ApplicationCore::ApplicationCore()
 	
 	// Initialize the input system
 	InputSystem::GetInstance().Init(this->window);
+	Renderer::GetInstance().Init(this->window);
 
 	// Continue onto the game's main loop with the splash screen game state being the first game state ran
 	GameStateSystem::GetInstance().PushState(SplashScreen::GetGameState());

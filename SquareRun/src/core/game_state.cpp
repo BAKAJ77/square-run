@@ -2,6 +2,11 @@
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+GameState::GameState() :
+	camera({ 0, 0 }, { RenderingGlobals::sceneViewWidth, RenderingGlobals::sceneViewHeight }), renderWhilePaused(true), 
+	updateWhilePaused(true)
+{}
+
 void GameState::Resume() {}
 
 void GameState::Pause() {}
@@ -73,12 +78,17 @@ void GameStateSystem::Update(const double& deltaTime)
 
 void GameStateSystem::Render() const
 {
+	Renderer::GetInstance().SetRenderTarget(RenderTarget::SCENE_FRAMEBUFFER);
+	Renderer::GetInstance().Clear({ 0, 0, 75, 255 });
+
 	for (size_t stateIndex = 0; stateIndex < this->stateStack.size(); stateIndex++)
 	{
 		const GameState* gameState = this->stateStack[stateIndex];
 		if ((stateIndex == 0) || (gameState->renderWhilePaused))
 			gameState->Render();
 	}
+
+	Renderer::GetInstance().FlushRenderedScene();
 }
 
 bool GameStateSystem::IsActive() const

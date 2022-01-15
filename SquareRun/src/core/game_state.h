@@ -1,14 +1,19 @@
 #ifndef GAME_STATE_H
 #define GAME_STATE_H
 
+#include <graphics/renderer.h>
 #include <vector>
 
 class GameState
 {
 	friend class GameStateSystem;
 protected:
+	OrthogonalCamera camera;
 	bool updateWhilePaused, renderWhilePaused;
 protected:
+	GameState();
+	virtual ~GameState() = default;
+
 	// For initializing the game state e.g. loading textures.
 	virtual void Init() = 0;
 

@@ -1,13 +1,23 @@
 #version 330 core
 
+struct Material
+{
+	sampler2D texture;
+	vec4 color;
+	bool useTexture;
+};
+
 in VSH_OUT
 {
 	vec2 uvCoords;
 } fshIn;
 
-uniform sampler2D geometryTexture;
+uniform Material material;
 
 void main()
 {
-	gl_FragColor = texture(geometryTexture, fshIn.uvCoords);
+	if (material.useTexture)
+		gl_FragColor = texture(material.texture, fshIn.uvCoords);
+	else
+		gl_FragColor = material.color;
 }

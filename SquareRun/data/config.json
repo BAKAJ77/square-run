@@ -1,7 +1,7 @@
 {
     "graphics": {
         "gamma": 2.200000047683716,
-        "numSamplesMSAA": 1,
+        "numSamplesMSAA": 2,
         "resolution": [
             1600,
             900
