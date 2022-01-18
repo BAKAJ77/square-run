@@ -17,7 +17,7 @@ uniform Material material;
 void main()
 {
 	if (material.useTexture)
-		gl_FragColor = texture(material.texture, fshIn.uvCoords);
+		gl_FragColor = texture(material.texture, fshIn.uvCoords) * material.color;
 	else
 		gl_FragColor = material.color;
 }

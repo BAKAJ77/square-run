@@ -1,9 +1,9 @@
-#ifndef SPLASH_SCREEN_H
-#define SPLASH_SCREEN_H
+#ifndef TESTER_STATE_H
+#define TESTER_STATE_H
 
 #include <core/game_state.h>
 
-class SplashScreen : public GameState
+class TesterState : public GameState
 {
 protected:
 	void Init() override;
@@ -12,7 +12,7 @@ protected:
 	void Update(const double& deltaTime) override;
 	void Render() const override;
 public:
-	static SplashScreen* GetGameState();
+	static TesterState* GetGameState();
 };
 
 #endif

@@ -1,4 +1,5 @@
-#include "game_state.h"
+#include <core/game_state.h>
+#include <core/transition_system.h>
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -11,9 +12,9 @@ void GameState::Resume() {}
 
 void GameState::Pause() {}
 
-void GameState::SwitchState(GameState* gameState) 
+void GameState::SwitchState(GameState* gameState, float transitionSpeed)
 {
-	GameStateSystem::GetInstance().SwitchState(gameState);
+	GameStateSystem::GetInstance().SwitchState(gameState, transitionSpeed);
 }
 
 void GameState::PushState(GameState* gameState)
@@ -28,17 +29,19 @@ void GameState::PopState()
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void GameStateSystem::SwitchState(GameState* gameState)
+GameStateSystem::GameStateSystem() :
+	pendingGameState(nullptr)
+{}
+
+void GameStateSystem::SwitchState(GameState* gameState, float transitionSpeed)
 {
-	// Destroy all game states currently in the stack
-	for (GameState* gameState : this->stateStack)
-		gameState->Destroy();
+	if (!this->stateStack.empty())
+	{
+		TransitionSystem::GetInstance().SetSpeed(transitionSpeed);
+		TransitionSystem::GetInstance().Play();
+	}
 
-	this->stateStack.clear();
-
-	// Init the new game stack and push it into the stack
-	gameState->Init();
-	this->stateStack.emplace_back(gameState);
+	this->pendingGameState = gameState;
 }
 
 void GameStateSystem::PushState(GameState* gameState)
@@ -68,11 +71,30 @@ void GameStateSystem::PopState()
 
 void GameStateSystem::Update(const double& deltaTime)
 {
-	for (size_t stateIndex = 0; stateIndex < this->stateStack.size(); stateIndex++)
+	TransitionSystem::GetInstance().Update(deltaTime);
+
+	if ((TransitionSystem::GetInstance().ShouldChangeState() || this->stateStack.empty()) && this->pendingGameState)
 	{
-		GameState* gameState = this->stateStack[stateIndex];
-		if ((stateIndex == 0) || (gameState->updateWhilePaused))
-			gameState->Update(deltaTime);
+		// Destroy all game states currently in the stack
+		for (GameState* gameState : this->stateStack)
+			gameState->Destroy();
+
+		this->stateStack.clear();
+
+		// Init the new game stack and push it into the stack
+		this->pendingGameState->Init();
+		this->stateStack.emplace_back(this->pendingGameState);
+		this->pendingGameState = nullptr;
+	}
+
+	if (!TransitionSystem::GetInstance().IsPlaying())
+	{
+		for (size_t stateIndex = 0; stateIndex < this->stateStack.size(); stateIndex++)
+		{
+			GameState* gameState = this->stateStack[stateIndex];
+			if ((stateIndex == 0) || (gameState->updateWhilePaused))
+				gameState->Update(deltaTime);
+		}
 	}
 }
 
@@ -88,12 +110,13 @@ void GameStateSystem::Render() const
 			gameState->Render();
 	}
 
+	TransitionSystem::GetInstance().Render();
 	Renderer::GetInstance().FlushRenderedScene();
 }
 
 bool GameStateSystem::IsActive() const
 {
-	return !this->stateStack.empty();
+	return !this->stateStack.empty() || this->pendingGameState;
 }
 
 GameStateSystem& GameStateSystem::GetInstance()

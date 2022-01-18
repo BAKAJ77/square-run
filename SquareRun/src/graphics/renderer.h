@@ -77,11 +77,11 @@ public:
 
 	// Renders a textured rectangle of specified size to the position specified on the screen.
 	void RenderTexturedRect(const OrthogonalCamera& sceneCamera, const TextureBufferPtr texture,
-		const glm::vec2& pos, const glm::vec2& size, float rotationAngle = 0.0f) const;
+		const glm::vec2& pos, const glm::vec2& size, float rotationAngle = 0.0f, const glm::vec4& colorMod = glm::vec4(255)) const;
 
 	// Renders a textured triangle of specified size to the position specified on the screen. 
 	void RenderTexturedTriangle(const OrthogonalCamera& sceneCamera, const TextureBufferPtr texture,
-		const glm::vec2& pos, const glm::vec2& size, float rotationAngle = 0.0f) const;
+		const glm::vec2& pos, const glm::vec2& size, float rotationAngle = 0.0f, const glm::vec4& colorMod = glm::vec4(255)) const;
 
 	// Renders a colored text of specified size to the position specified on the screen.
 	void RenderText(const OrthogonalCamera& sceneCamera, const FontPtr font, uint32_t fontSize,

@@ -79,8 +79,8 @@ glm::mat4 Renderer::GenerateModelMatrix(const glm::vec2& pos, const glm::vec2& s
 {
 	glm::mat4 modelMatrix;
 	modelMatrix = glm::translate(modelMatrix, glm::vec3(pos, 0.0f));
-	modelMatrix = glm::scale(modelMatrix, glm::vec3(size, 1.0f));
 	modelMatrix = glm::rotate(modelMatrix, glm::radians(rotationAngle), glm::vec3(0.0f, 0.0f, 1.0f));
+	modelMatrix = glm::scale(modelMatrix, glm::vec3(size, 1.0f));
 
 	return modelMatrix;
 }
@@ -235,7 +235,7 @@ void Renderer::RenderTriangle(const OrthogonalCamera& sceneCamera, const glm::ve
 }
 
 void Renderer::RenderTexturedRect(const OrthogonalCamera& sceneCamera, const TextureBufferPtr texture, const glm::vec2& pos,
-	const glm::vec2& size, float rotationAngle) const
+	const glm::vec2& size, float rotationAngle, const glm::vec4& colorMod) const
 {
 	// Bind the shader, rectangle's VAO and texture
 	this->geometryShader->BindProgram();
@@ -246,8 +246,9 @@ void Renderer::RenderTexturedRect(const OrthogonalCamera& sceneCamera, const Tex
 	const glm::mat4 modelMatrix = this->GenerateModelMatrix(pos, size, rotationAngle);
 
 	// Assign required shader uniform values
-	this->geometryShader->SetUniform("material.useTexture", true);
 	this->geometryShader->SetUniform("material.texture", 0);
+	this->geometryShader->SetUniform("material.useTexture", true);
+	this->geometryShader->SetUniformGLM("material.color", colorMod / 255.0f);
 	this->geometryShader->SetUniformGLM("cameraMatrix", sceneCamera.GetMatrix());
 	this->geometryShader->SetUniformGLM("modelMatrix", modelMatrix);
 
@@ -256,7 +257,7 @@ void Renderer::RenderTexturedRect(const OrthogonalCamera& sceneCamera, const Tex
 }
 
 void Renderer::RenderTexturedTriangle(const OrthogonalCamera& sceneCamera, const TextureBufferPtr texture, const glm::vec2& pos, 
-	const glm::vec2& size, float rotationAngle) const
+	const glm::vec2& size, float rotationAngle, const glm::vec4& colorMod) const
 {
 	// Bind the shader, triangle's VAO and texture
 	this->geometryShader->BindProgram();
@@ -267,8 +268,9 @@ void Renderer::RenderTexturedTriangle(const OrthogonalCamera& sceneCamera, const
 	const glm::mat4 modelMatrix = this->GenerateModelMatrix(pos, size, rotationAngle);
 
 	// Assign required shader uniform values
-	this->geometryShader->SetUniform("material.useTexture", true);
 	this->geometryShader->SetUniform("material.texture", 0);
+	this->geometryShader->SetUniform("material.useTexture", true);
+	this->geometryShader->SetUniformGLM("material.color", colorMod / 255.0f);
 	this->geometryShader->SetUniformGLM("cameraMatrix", sceneCamera.GetMatrix());
 	this->geometryShader->SetUniformGLM("modelMatrix", modelMatrix);
 

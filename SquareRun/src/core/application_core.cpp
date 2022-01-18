@@ -28,7 +28,7 @@ ApplicationCore::ApplicationCore()
 	Renderer::GetInstance().Init(this->window);
 
 	// Continue onto the game's main loop with the splash screen game state being the first game state ran
-	GameStateSystem::GetInstance().PushState(SplashScreen::GetGameState());
+	GameStateSystem::GetInstance().SwitchState(SplashScreen::GetGameState());
 	this->MainLoop();
 }
 

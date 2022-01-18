@@ -32,7 +32,7 @@ protected:
 	// For rendering objects in the game state.
 	virtual void Render() const = 0;
 
-	void SwitchState(GameState* gameState);
+	void SwitchState(GameState* gameState, float transitionSpeed = 3000.0f);
 	void PushState(GameState* gameState);
 	void PopState();
 };
@@ -41,8 +41,9 @@ class GameStateSystem
 {
 private:
 	std::vector<GameState*> stateStack;
+	GameState* pendingGameState;
 private:
-	GameStateSystem() = default;
+	GameStateSystem();
 public:
 	GameStateSystem(const GameStateSystem& other) = delete;
 	GameStateSystem(GameStateSystem&& temp) noexcept = delete;
@@ -52,7 +53,7 @@ public:
 	GameStateSystem& operator=(GameStateSystem&& temp) noexcept = delete;
 
 	// Destroys all game states in the stack and starts up the new game state given.
-	void SwitchState(GameState* gameState);
+	void SwitchState(GameState* gameState, float transitionSpeed = 3000.0f);
 
 	// Pauses the most recent game state (if any) and starts up the new game state given.
 	void PushState(GameState* gameState);
