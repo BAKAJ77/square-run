@@ -5,7 +5,7 @@
 #include <serialization/config.h>
 #include <util/directory_system.h>
 #include <util/timestamp.h>
-#include <states/splash_screen.h>
+#include <states/intro_screen.h>
 
 ApplicationCore::ApplicationCore()
 {
@@ -28,7 +28,7 @@ ApplicationCore::ApplicationCore()
 	Renderer::GetInstance().Init(this->window);
 
 	// Continue onto the game's main loop with the splash screen game state being the first game state ran
-	GameStateSystem::GetInstance().SwitchState(SplashScreen::GetGameState());
+	GameStateSystem::GetInstance().SwitchState(IntroScreen::GetGameState());
 	this->MainLoop();
 }
 
