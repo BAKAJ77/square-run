@@ -17,13 +17,14 @@ private:
 	};
 private:
 	uint32_t programID;
-	std::string vertexFileName, fragmentFileName;
+	std::string vertexFileName, fragmentFileName, geometryFileName;
 	mutable std::unordered_map<std::string, uint32_t> uniformCache;
 private:
 	void PollShaderErrors(const uint32_t& id, PollCheckType type) const;
 	uint32_t QueryUniformID(const std::string_view& uniformName) const;
 public:
-	ShaderProgram(const std::string_view& vertexFileName, const std::string_view& fragmentFileName);
+	ShaderProgram(const std::string_view& vertexFileName, const std::string_view& fragmentFileName, 
+		const std::string_view& geometryFileName);
 	~ShaderProgram();
 	
 	// Sets the value of shader uniform of type integer.
@@ -64,6 +65,9 @@ public:
 
 	// Returns the fragment shader's file name.
 	const std::string& GetFragmentFileName() const;
+
+	// Returns the geometry shader's file name.
+	const std::string& GetGeometryFileName() const;
 };
 
 using ShaderProgramPtr = std::shared_ptr<ShaderProgram>;
@@ -71,7 +75,8 @@ using ShaderProgramPtr = std::shared_ptr<ShaderProgram>;
 namespace Memory
 {
 	// Returns a shared pointer to the new created shader program.
-	extern ShaderProgramPtr CreateShaderProgram(const std::string_view& vertexFileName, const std::string_view& fragmentFileName);
+	extern ShaderProgramPtr CreateShaderProgram(const std::string_view& vertexFileName, const std::string_view& fragmentFileName,
+		const std::string_view& geometryFileName = "");
 }
 
 #endif

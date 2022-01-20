@@ -6,33 +6,51 @@
 #include <sstream>
 #include <fstream>
 
-ShaderProgram::ShaderProgram(const std::string_view& vertexFileName, const std::string_view& fragmentFileName) :
-	vertexFileName(vertexFileName), fragmentFileName(fragmentFileName)
+ShaderProgram::ShaderProgram(const std::string_view& vertexFileName, const std::string_view& fragmentFileName,
+	const std::string_view& geometryFileName) :
+	vertexFileName(vertexFileName), fragmentFileName(fragmentFileName), geometryFileName(geometryFileName)
 {
 	// Get the game's shader directory path
 	const std::string shaderDirectoryPath = Util::GetGameRequisitesDirectory() + "shaders/";
 	if (!Util::IsExistingDirectory(shaderDirectoryPath))
 		LogSystem::GetInstance().OutputLog("Couldn't find the game's shaders directory", Severity::FATAL);
 
-	// Open the shader files and load their contents
+	// Open the vertex and fragment shader files and load their contents
 	std::ifstream vertexFile, fragmentFile;
-	std::stringstream vertexFileStream, fragmentFileStream;
+	std::stringstream vertexFileStream, fragmentFileStream, geometryFileStream;
 
 	vertexFile.open(shaderDirectoryPath + vertexFileName.data());
 	fragmentFile.open(shaderDirectoryPath + fragmentFileName.data());
 
 	if (vertexFile.fail()) // Failed to open the vertex shader file
+	{
 		LogSystem::GetInstance().OutputLog("Failed to open vertex shader file: " + std::string(vertexFileName.data()),
 			Severity::FATAL);
+	}
 	else if (fragmentFile.fail()) // Failed to open the fragment shader file
+	{
 		LogSystem::GetInstance().OutputLog("Failed to open fragment shader file: " + std::string(fragmentFileName.data()),
 			Severity::FATAL);
+	}
 
 	vertexFileStream << vertexFile.rdbuf();
 	fragmentFileStream << fragmentFile.rdbuf();
 
 	vertexFile.close();
 	fragmentFile.close();
+
+	// If a geometry shader path was specified, open and load the geometry file contents
+	if (!geometryFileName.empty())
+	{
+		std::ifstream geometryFile(shaderDirectoryPath + geometryFileName.data());
+		if (geometryFile.fail()) // Failed to open the geometry shader file
+		{
+			LogSystem::GetInstance().OutputLog("Failed to open geometry shader file: " + std::string(geometryFileName.data()),
+				Severity::FATAL);
+		}
+
+		geometryFileStream << geometryFile.rdbuf();
+	}
 
 	// Compile both the loaded vertex and fragment shader source code
 	const std::string vertexSourceStr = vertexFileStream.str(), fragmentSourceStr = fragmentFileStream.str();
@@ -49,12 +67,31 @@ ShaderProgram::ShaderProgram(const std::string_view& vertexFileName, const std::
 	glShaderSource(fragmentShader, 1, &fragmentSourcePtr, nullptr);
 	glCompileShader(fragmentShader);
 
-	this->PollShaderErrors(fragmentShader, PollCheckType::LINKING);
+	this->PollShaderErrors(fragmentShader, PollCheckType::COMPILATION);
+
+	// Compile the geometry shader source (if a geometry shader file was loaded)
+	uint32_t geometryShader = 0;
+
+	if (!this->geometryFileName.empty())
+	{
+		const std::string geometrySourceStr = geometryFileStream.str();
+		const char* geometrySourcePtr = geometrySourceStr.c_str();
+
+		geometryShader = glCreateShader(GL_GEOMETRY_SHADER);
+		glShaderSource(geometryShader, 1, &geometrySourcePtr, nullptr);
+		glCompileShader(geometryShader);
+
+		this->PollShaderErrors(geometryShader, PollCheckType::COMPILATION);
+	}
 
 	// Create shader program, then attach both compiled shaders to the shader program
 	this->programID = glCreateProgram();
 	glAttachShader(this->programID, vertexShader);
 	glAttachShader(this->programID, fragmentShader);
+	
+	if (!this->geometryFileName.empty())
+		glAttachShader(this->programID, geometryShader);
+
 	glLinkProgram(this->programID);
 
 	this->PollShaderErrors(this->programID, PollCheckType::LINKING);
@@ -62,6 +99,9 @@ ShaderProgram::ShaderProgram(const std::string_view& vertexFileName, const std::
 	// Lastly, clean up allocated resources
 	glDeleteShader(vertexShader); // We don't need the compiled shader objects anymore, they've been attached to the shader program
 	glDeleteShader(fragmentShader);
+	
+	if (!this->geometryFileName.empty())
+		glDeleteShader(geometryShader);
 }
 
 ShaderProgram::~ShaderProgram()
@@ -176,7 +216,13 @@ const std::string& ShaderProgram::GetFragmentFileName() const
 	return this->fragmentFileName;
 }
 
-ShaderProgramPtr Memory::CreateShaderProgram(const std::string_view& vertexFileName, const std::string_view& fragmentFileName)
+const std::string& ShaderProgram::GetGeometryFileName() const
 {
-	return std::make_shared<ShaderProgram>(vertexFileName, fragmentFileName);
+	return this->geometryFileName;
+}
+
+ShaderProgramPtr Memory::CreateShaderProgram(const std::string_view& vertexFileName, const std::string_view& fragmentFileName,
+	const std::string_view& geometryFileName)
+{
+	return std::make_shared<ShaderProgram>(vertexFileName, fragmentFileName, geometryFileName);
 }

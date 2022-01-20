@@ -101,7 +101,7 @@ void GameStateSystem::Update(const double& deltaTime)
 void GameStateSystem::Render() const
 {
 	Renderer::GetInstance().SetRenderTarget(RenderTarget::SCENE_FRAMEBUFFER);
-	Renderer::GetInstance().Clear({ 0, 0, 75, 255 });
+	Renderer::GetInstance().Clear();
 
 	for (size_t stateIndex = 0; stateIndex < this->stateStack.size(); stateIndex++)
 	{

@@ -188,9 +188,14 @@ void Renderer::SetRenderTarget(RenderTarget target) const
 	}
 }
 
-void Renderer::Clear(const glm::vec4& color) const
+void Renderer::SetClearColor(const glm::vec4& color)
 {
-	glClearColor(color.r / 255.0f, color.g / 255.0f, color.b / 255.0f, color.a / 255.0f);
+	this->clearColor = color / 255.0f;
+}
+
+void Renderer::Clear() const
+{
+	glClearColor(this->clearColor.r, this->clearColor.g, this->clearColor.b, this->clearColor.a);
 	glClear(GL_COLOR_BUFFER_BIT);
 }
 
@@ -319,7 +324,7 @@ void Renderer::FlushRenderedScene() const
 {
 	// Bind the default framebuffer and clear it
 	this->SetRenderTarget(RenderTarget::DEFAULT_FRAMEBUFFER);
-	Renderer::GetInstance().Clear({ 0, 0, 0, 255 });
+	Renderer::GetInstance().Clear();
 
 	// Bind the post-process shader, texture and rectangle VAO
 	this->postProcessShader->BindProgram();

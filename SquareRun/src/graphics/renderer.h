@@ -36,6 +36,8 @@ private:
 	FrameBufferPtr postProcessFBO, externalFBO;
 	TextureBufferPtr postProcessTexture;
 	float gammaFactor;
+
+	glm::vec4 clearColor;
 private:
 	// Returns a generated model matrix.
 	glm::mat4 GenerateModelMatrix(const glm::vec2& pos, const glm::vec2& size, float rotationAngle) const;
@@ -64,8 +66,11 @@ public:
 	// Sets the current render target (aka framebuffer), consequent render calls will only modify the contents of this render target.
 	void SetRenderTarget(RenderTarget target) const;
 
-	// Clears the screen and fills the screen with the specified color.
-	void Clear(const glm::vec4& color) const;
+	// Sets the color that the screen is cleared with.
+	void SetClearColor(const glm::vec4& color);
+
+	// Clears the screen and fills the screen with the stored clear color.
+	void Clear() const;
 
 	// Renders a colored rectangle of specified size to the position specified on the screen.
 	void RenderRect(const OrthogonalCamera& sceneCamera, const glm::vec4& color, const glm::vec2& pos,
