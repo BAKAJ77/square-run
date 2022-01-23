@@ -1,4 +1,5 @@
 #include <graphics/ttf_font_loader.h>
+#include <serialization/config.h>
 #include <util/logging_system.h>
 #include <util/directory_system.h>
 
@@ -92,7 +93,8 @@ const uint32_t& Font::GetResolution() const
 	return this->resolution;
 }
 
-FontPtr Memory::LoadFontFromFile(const std::string_view& fileName, uint32_t resolution)
+FontPtr Memory::LoadFontFromFile(const std::string_view& fileName)
 {
+	const uint32_t resolution = Serialization::GetConfigElement<uint32_t>("graphics", "textQuality");
 	return std::make_shared<Font>(fileName, resolution);
 }

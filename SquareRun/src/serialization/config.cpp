@@ -25,7 +25,8 @@ namespace Serialization
 				{
 					{ "resolution", { 1600, 900 } },
 					{ "numSamplesMSAA", 2 },
-					{ "gamma", 2.2f }
+					{ "gamma", 2.2f },
+					{ "textQuality", 100 }
 				}
 			}
 		};

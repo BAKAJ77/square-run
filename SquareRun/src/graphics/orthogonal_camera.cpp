@@ -27,6 +27,11 @@ glm::mat4 OrthogonalCamera::GetViewMatrix() const
 	return glm::lookAt(glm::vec3(this->position, 0.0f), glm::vec3(this->position, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 }
 
+float OrthogonalCamera::GetAspectRatio() const
+{
+	return this->size.x / this->size.y;
+}
+
 const glm::mat4& OrthogonalCamera::GetProjectionMatrix() const
 {
 	return this->projectionMatrix;

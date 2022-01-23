@@ -25,6 +25,9 @@ public:
 	// Returns the camera's view matrix.
 	glm::mat4 GetViewMatrix() const;
 
+	// Returns the aspect ratio of the camera.
+	float GetAspectRatio() const;
+
 	// Returns the camera's projection matrix.
 	const glm::mat4& GetProjectionMatrix() const;
 

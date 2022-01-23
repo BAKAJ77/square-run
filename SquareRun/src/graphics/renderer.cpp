@@ -314,7 +314,7 @@ void Renderer::RenderText(const OrthogonalCamera& sceneCamera, const FontPtr fon
 	this->textShader->SetUniform("fontBitmapTexture", 0);
 	this->textShader->SetUniformGLM("cameraMatrix", sceneCamera.GetMatrix());
 	this->textShader->SetUniformGLM("modelMatrix", modelMatrix);
-	this->textShader->SetUniformGLM("textColor", color);
+	this->textShader->SetUniformGLM("textColor", color / 255.0f);
 
 	// Render the text
 	glDrawElements(GL_TRIANGLES, (uint32_t)renderData.second.size(), GL_UNSIGNED_INT, nullptr);
@@ -341,6 +341,42 @@ void Renderer::FlushRenderedScene() const
 
 	// Render the processed texture
 	glDrawArrays(GL_TRIANGLES, 0, 6);
+}
+
+glm::vec2 Renderer::GetTextSize(const FontPtr font, uint32_t fontSize, const std::string_view& text) const
+{
+	glm::vec2 totalSize;
+	float minY = 0.0f, maxY = 0.0f;
+	bool firstCharacter = true;
+
+	for (uint32_t i = 0; i < text.size(); i++)
+	{
+		const GlyphData& glyphMetrics = font->GetGlyphs().at(text[i]);
+
+		// WIDTH
+		if (firstCharacter)
+		{
+			totalSize.x += glyphMetrics.advanceX;
+			firstCharacter = false;
+		}
+		else if (i == text.size() - 1)
+			totalSize.x += glyphMetrics.bearing.x + glyphMetrics.size.x;
+		else
+			totalSize.x += glyphMetrics.bearing.x + glyphMetrics.advanceX;
+
+		// MAX POINT
+		if (glyphMetrics.bearing.y > maxY)
+			maxY = glyphMetrics.bearing.y;
+
+		// MIN POINT
+		if (glyphMetrics.bearing.y - glyphMetrics.size.y < minY)
+			minY = glyphMetrics.bearing.y - glyphMetrics.size.y;
+	}
+
+	totalSize.y = maxY - minY;
+	totalSize *= glm::vec2(static_cast<float>(fontSize) / static_cast<float>(font->GetResolution()));
+
+	return totalSize;
 }
 
 // Returns singleton instance object of this class.

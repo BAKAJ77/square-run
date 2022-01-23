@@ -5,7 +5,8 @@
         "resolution": [
             1600,
             900
-        ]
+        ],
+        "textQuality": 100
     },
     "window": {
         "fullscreen": false,

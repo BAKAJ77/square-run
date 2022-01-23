@@ -47,7 +47,7 @@ using FontPtr = std::shared_ptr<Font>;
 namespace Memory
 {
 	// Returns a shared pointer to the new created font object loaded from the specified true type font file.
-	extern FontPtr LoadFontFromFile(const std::string_view& fileName, uint32_t resolution);
+	extern FontPtr LoadFontFromFile(const std::string_view& fileName);
 }
 
 #endif

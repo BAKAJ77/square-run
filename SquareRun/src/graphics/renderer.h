@@ -95,6 +95,9 @@ public:
 	// Renders and displays the final rendered and post-processed scene.
 	void FlushRenderedScene() const;
 
+	// Returns the size of the given text string when rendered.
+	glm::vec2 GetTextSize(const FontPtr font, uint32_t fontSize, const std::string_view& text) const;
+
 	// Returns singleton instance object of this class.
 	static Renderer& GetInstance();
 };

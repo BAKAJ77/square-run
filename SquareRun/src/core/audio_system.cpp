@@ -107,4 +107,20 @@ uint32_t GlobalAudio::GetPlayPosition() const
 	return 0;
 }
 
+bool GlobalAudio::isPaused() const
+{
+	if (this->channel)
+		return this->channel->getIsPaused();
+
+	return false;
+}
+
+bool GlobalAudio::isFinished() const
+{
+	if (this->channel)
+		return this->channel->isFinished();
+
+	return false;
+}
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -36,6 +36,12 @@ public:
 
 	// Returns the current play position of the audio in milliseconds.
 	uint32_t GetPlayPosition() const;
+	
+	// Returns TRUE if the audio is paused, else FALSE is returned.
+	bool isPaused() const;
+
+	// Returns TRUE if the audio has finished playing, else FALSE is returned.
+	bool isFinished() const;
 };
 
 using GlobalAudioPtr = std::shared_ptr<GlobalAudio>;
