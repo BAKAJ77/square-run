@@ -35,13 +35,16 @@ GameStateSystem::GameStateSystem() :
 
 void GameStateSystem::SwitchState(GameState* gameState, float transitionSpeed)
 {
-	if (!this->stateStack.empty())
+	if (!this->pendingGameState)
 	{
-		TransitionSystem::GetInstance().SetSpeed(transitionSpeed);
-		TransitionSystem::GetInstance().Play();
-	}
+		if (!this->stateStack.empty())
+		{
+			TransitionSystem::GetInstance().SetSpeed(transitionSpeed);
+			TransitionSystem::GetInstance().Play();
+		}
 
-	this->pendingGameState = gameState;
+		this->pendingGameState = gameState;
+	}
 }
 
 void GameStateSystem::PushState(GameState* gameState)
@@ -87,14 +90,11 @@ void GameStateSystem::Update(const double& deltaTime)
 		this->pendingGameState = nullptr;
 	}
 
-	if (!TransitionSystem::GetInstance().IsPlaying())
+	for (size_t stateIndex = 0; stateIndex < this->stateStack.size(); stateIndex++)
 	{
-		for (size_t stateIndex = 0; stateIndex < this->stateStack.size(); stateIndex++)
-		{
-			GameState* gameState = this->stateStack[stateIndex];
-			if ((stateIndex == 0) || (gameState->updateWhilePaused))
-				gameState->Update(deltaTime);
-		}
+		GameState* gameState = this->stateStack[stateIndex];
+		if ((stateIndex == 0) || (gameState->updateWhilePaused))
+			gameState->Update(deltaTime);
 	}
 }
 

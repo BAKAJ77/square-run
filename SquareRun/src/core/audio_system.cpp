@@ -2,6 +2,8 @@
 #include <util/logging_system.h>
 #include <util/directory_system.h>
 
+#include <algorithm>
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 AudioSystem::AudioSystem()
@@ -62,7 +64,7 @@ void GlobalAudio::SetPlayPosition(uint32_t milliseconds)
 void GlobalAudio::SetVolume(float volume)
 {
 	if (this->channel)
-		this->channel->setVolume(volume);
+		this->channel->setVolume(std::clamp(volume, 0.0f, 1.0f));
 }
 
 void GlobalAudio::Play(bool loop)
@@ -105,6 +107,14 @@ uint32_t GlobalAudio::GetPlayPosition() const
 		return this->channel->getPlayPosition();
 
 	return 0;
+}
+
+float GlobalAudio::GetVolume() const
+{
+	if (this->channel)
+		return this->channel->getVolume();
+
+	return 1.0f;
 }
 
 bool GlobalAudio::isPaused() const

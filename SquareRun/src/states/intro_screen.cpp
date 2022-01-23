@@ -1,4 +1,5 @@
 #include <states/intro_screen.h>
+#include <states/main_menu.h>
 #include <core/input_system.h>
 #include <util/timestamp.h>
 
@@ -9,11 +10,17 @@ void IntroScreen::Init()
 	// Initialize logic variables
 	this->bkgSize = { 0, 50 };
 	this->bkgColor = { 255, 255, 255, 255 };
+
 	this->logoPosition = { this->camera.GetSize().x / 2.0f, -300 };
 	this->logoSize = { 850, 425 };
+
 	this->borderOpacity = 0.0f;
 	this->textOpacity = 0.0f;
+
 	this->timeWhenIntroMusicEnd = 0.0f;
+	this->timeWhenTextAppear = 0.0f;
+	this->introComplete = false;
+	this->abortIntro = false;
 
 	this->effectPositions[0] = { -700, 1080 + (700 / this->camera.GetAspectRatio()) };
 	this->effectPositions[1] = { 2620 - (100 / this->camera.GetAspectRatio()), -100 - (700 / this->camera.GetAspectRatio())};
@@ -30,21 +37,20 @@ void IntroScreen::Init()
 	this->introMusic->SetVolume(1.0f);
 }
 
-void IntroScreen::Destroy() {}
+void IntroScreen::Destroy() 
+{
+	this->borderTexture.reset();
+	this->logoTexture.reset();
+	this->introMusic.reset();
+	this->textFont.reset();
+}
 
 void IntroScreen::Update(const double& deltaTime)
 {
 	this->UpdateIntroSequence(deltaTime);
 	this->UpdateEffects(deltaTime);
-	
-	// Once the intro is complete and the user presses ENTER, then continue onto the next game state
-	if (this->introComplete)
-	{
-		if (InputSystem::GetInstance().WasKeyPressed(KeyCode::KEY_ENTER))
-		{
-			//this->SwitchState();
-		}
-	}
+	this->CheckUserContinue(deltaTime);
+	this->CheckAutoContinue();
 }
 
 void IntroScreen::Render() const
@@ -135,7 +141,14 @@ void IntroScreen::UpdateEffects(const double& deltaTime)
 	if (this->introComplete)
 	{
 		// Update the play text opacity
-		this->textOpacity = (float)std::abs(std::sin(Util::GetSecondsSinceEpoch() * 2.0f)) * 255.0f;
+		if (this->timeWhenTextAppear == 0.0f)
+		{
+			this->timeWhenTextAppear = (float)Util::GetSecondsSinceEpoch();
+		}
+		else
+		{
+			this->textOpacity = (float)std::abs(std::sin((Util::GetSecondsSinceEpoch() - this->timeWhenTextAppear) * 2.0f)) * 255.0f;
+		}
 
 		// Update the effect positions
 		this->effectPositions[0].x += 700 * (float)deltaTime;
@@ -157,17 +170,44 @@ void IntroScreen::UpdateEffects(const double& deltaTime)
 	}
 }
 
+void IntroScreen::CheckUserContinue(const double& deltaTime)
+{
+	// Once the intro is complete and the user presses ENTER, 
+	// then abort the into prematurely and continue onto the next game state
+	if (this->introComplete && !this->abortIntro)
+	{
+		if (InputSystem::GetInstance().WasKeyPressed(KeyCode::KEY_ENTER))
+		{
+			this->abortIntro = true;
+		}
+	}
+
+	if (this->abortIntro)
+	{
+		this->introMusic->SetVolume(this->introMusic->GetVolume() - (float)deltaTime);
+
+		if (this->introMusic->GetVolume() == 0.0f)
+		{
+			this->SwitchState(MainMenu::GetGameState());
+		}
+	}
+}
+
 void IntroScreen::CheckAutoContinue()
 {
-	if (this->introMusic->isFinished() && this->timeWhenIntroMusicEnd == 0.0f)
+	// Once 5 seconds after the intro music ends has passed, continue onto the main menu game state
+	if (this->introMusic->isFinished())
 	{
-		this->timeWhenIntroMusicEnd = Util::GetSecondsSinceEpoch();
-	}
-	else
-	{
-		if (Util::GetSecondsSinceEpoch() - this->timeWhenIntroMusicEnd >= 5.0f)
+		if (this->timeWhenIntroMusicEnd == 0.0f)
 		{
-			//this->SwitchState();
+			this->timeWhenIntroMusicEnd = (float)Util::GetSecondsSinceEpoch();
+		}
+		else
+		{
+			if (Util::GetSecondsSinceEpoch() - this->timeWhenIntroMusicEnd >= 5.0f)
+			{
+				this->SwitchState(MainMenu::GetGameState());
+			}
 		}
 	}
 }

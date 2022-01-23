@@ -36,6 +36,9 @@ public:
 
 	// Returns the current play position of the audio in milliseconds.
 	uint32_t GetPlayPosition() const;
+
+	// Returns the volume of the audio.
+	float GetVolume() const;
 	
 	// Returns TRUE if the audio is paused, else FALSE is returned.
 	bool isPaused() const;

@@ -18,8 +18,8 @@ void TransitionSystem::SetSpeed(float speed)
 void TransitionSystem::Play()
 {
 	this->texturePosition = { 2520, -400 };
-	this->effectPositions[0] = { -1000, 1700 };
-	this->effectPositions[1] = { 2920, -620 };
+	this->effectPositions[0] = { -1000, 1725 };
+	this->effectPositions[1] = { 2920, -645 };
 
 	this->currentlyPlaying = true;
 	this->changeState = false;
@@ -36,11 +36,11 @@ void TransitionSystem::Update(const double& deltaTime)
 		this->texturePosition.y += (this->speed / sceneAspectRatio) * (float)deltaTime;
 
 		// Update the transition effect positions
-		this->effectPositions[0].x += (this->speed * 1.5f) * (float)deltaTime;
-		this->effectPositions[0].y -= ((this->speed * 1.5f) / sceneAspectRatio) * (float)deltaTime;
+		this->effectPositions[0].x += (this->speed * 1.25f) * (float)deltaTime;
+		this->effectPositions[0].y -= ((this->speed * 1.25f) / sceneAspectRatio) * (float)deltaTime;
 
-		this->effectPositions[1].x -= (this->speed * 1.5f) * (float)deltaTime;
-		this->effectPositions[1].y += ((this->speed * 1.5f) / sceneAspectRatio) * (float)deltaTime;
+		this->effectPositions[1].x -= (this->speed * 1.25f) * (float)deltaTime;
+		this->effectPositions[1].y += ((this->speed * 1.25f) / sceneAspectRatio) * (float)deltaTime;
 
 		// Signal that the game state should change once the transition background is fully covering the screen
 		if (this->texturePosition.x <= 0.0f)
@@ -60,12 +60,12 @@ void TransitionSystem::Render() const
 		for (int i = 0; i < 3; i++)
 		{
 			Renderer::GetInstance().RenderTexturedRect(this->camera, this->texture, { this->texturePosition.x + (800 * i),
-				this->texturePosition.y - (400 * i) }, {2250, 1150}, 45, {255, 0, 0, 255});
+				this->texturePosition.y - (400 * i) }, { 2250, 1150 }, 45, { 255, 0, 0, 255 });
 		}
 
 		// Render the transition effects
-		Renderer::GetInstance().RenderRect(this->camera, { 0, 0, 255, 255 }, this->effectPositions[0], { 600, 25 }, 150);
-		Renderer::GetInstance().RenderRect(this->camera, { 255, 0, 255, 255 }, this->effectPositions[1], { 600, 25 }, 150);
+		Renderer::GetInstance().RenderRect(this->camera, { 0, 0, 255, 255 }, this->effectPositions[0], { 600, 50 }, 150);
+		Renderer::GetInstance().RenderRect(this->camera, { 255, 0, 255, 255 }, this->effectPositions[1], { 600, 50 }, 150);
 	}
 }
 
