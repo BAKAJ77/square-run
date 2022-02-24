@@ -29,18 +29,16 @@ void TransitionSystem::Update(const double& deltaTime)
 {
 	if (this->currentlyPlaying)
 	{
-		const float sceneAspectRatio = this->camera.GetSize().x / this->camera.GetSize().y;
-
 		// Update the transition background's position
 		this->texturePosition.x -= this->speed * (float)deltaTime;
-		this->texturePosition.y += (this->speed / sceneAspectRatio) * (float)deltaTime;
+		this->texturePosition.y += (this->speed / this->camera.GetAspectRatio()) * (float)deltaTime;
 
 		// Update the transition effect positions
 		this->effectPositions[0].x += (this->speed * 1.25f) * (float)deltaTime;
-		this->effectPositions[0].y -= ((this->speed * 1.25f) / sceneAspectRatio) * (float)deltaTime;
+		this->effectPositions[0].y -= ((this->speed * 1.25f) / this->camera.GetAspectRatio()) * (float)deltaTime;
 
 		this->effectPositions[1].x -= (this->speed * 1.25f) * (float)deltaTime;
-		this->effectPositions[1].y += ((this->speed * 1.25f) / sceneAspectRatio) * (float)deltaTime;
+		this->effectPositions[1].y += ((this->speed * 1.25f) / this->camera.GetAspectRatio()) * (float)deltaTime;
 
 		// Signal that the game state should change once the transition background is fully covering the screen
 		if (this->texturePosition.x <= 0.0f)

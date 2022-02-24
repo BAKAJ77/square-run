@@ -59,6 +59,10 @@ void IntroScreen::Render() const
 	Renderer::GetInstance().RenderRect(this->camera, this->bkgColor, { this->bkgSize.x / 2.0f, this->camera.GetSize().y / 2.0f }, 
 		this->bkgSize);
 
+	// Render the border
+	Renderer::GetInstance().RenderTexturedRect(this->camera, this->borderTexture, this->camera.GetSize() / 2.0f,
+		this->camera.GetSize(), 0, { 0, 255, 0, this->borderOpacity });
+
 	// Render the effects
 	Renderer::GetInstance().RenderRect(this->camera, { 255, 0, 0, 255 }, this->effectPositions[0], { 700, 50 }, 150);
 	Renderer::GetInstance().RenderRect(this->camera, { 0, 0, 255, 255 }, this->effectPositions[1], { 700, 50 }, 150);
@@ -67,10 +71,6 @@ void IntroScreen::Render() const
 	// Render the game logo
 	Renderer::GetInstance().RenderTexturedRect(this->camera, this->logoTexture, this->logoPosition, this->logoSize, 0, 
 		{ 255, 225, 255, 255 });
-
-	// Render the border
-	Renderer::GetInstance().RenderTexturedRect(this->camera, this->borderTexture, this->camera.GetSize() / 2.0f,
-		this->camera.GetSize(), 0, { 0, 255, 0, this->borderOpacity });
 
 	// Render play text
 	const glm::vec2 textSize = Renderer::GetInstance().GetTextSize(this->textFont, 100, "Press Enter To Play");
@@ -184,7 +184,7 @@ void IntroScreen::CheckUserContinue(const double& deltaTime)
 
 	if (this->abortIntro)
 	{
-		this->introMusic->SetVolume(this->introMusic->GetVolume() - (float)deltaTime);
+		this->introMusic->SetVolume(this->introMusic->GetVolume() - (2.0f * (float)deltaTime));
 
 		if (this->introMusic->GetVolume() == 0.0f)
 		{

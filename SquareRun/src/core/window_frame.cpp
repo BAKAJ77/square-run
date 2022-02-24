@@ -17,14 +17,14 @@ namespace Callback
 }
 
 WindowFrame::WindowFrame(const std::string_view& title, int width, int height, bool fullscreen, bool resizable, bool enableVsync) :
-	width(width), height(height), fullscreen(fullscreen), resizable(resizable)
+	width(width), height(height), fullscreen(fullscreen), resizable(resizable), vsyncEnabled(enableVsync)
 {
 	// Initialize callback member pointers
 	Callback::width = &this->width;
 	Callback::height = &this->height;
 
 	// Initialize the GLFW library
-	if (glfwInit() < 0)
+	if (!glfwInit())
 		LogSystem::GetInstance().OutputLog("Failed to initialize the GLFW library.", Severity::FATAL);
 
 	// Configure the window hints
@@ -37,6 +37,9 @@ WindowFrame::WindowFrame(const std::string_view& title, int width, int height, b
 	fullscreen ? 
 		this->framePtr = glfwCreateWindow(width, height, title.data(), glfwGetPrimaryMonitor(), nullptr) :
 		this->framePtr = glfwCreateWindow(width, height, title.data(), nullptr, nullptr);
+
+	if (!this->framePtr)
+		LogSystem::GetInstance().OutputLog("Failed to create the GLFW window", Severity::FATAL);
 
 	const GLFWvidmode* videoMode = glfwGetVideoMode(glfwGetPrimaryMonitor());
 	glfwSetWindowPos(this->framePtr, (videoMode->width / 2) - (width / 2), (videoMode->height / 2) - (height / 2));
