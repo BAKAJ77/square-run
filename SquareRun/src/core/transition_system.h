@@ -8,9 +8,9 @@ class TransitionSystem
 private:
 	OrthogonalCamera camera;
 	TextureBufferPtr texture;
-	glm::vec2 texturePosition, effectPositions[2];
+	glm::vec2 rectPositions[2], effectPositions[2];
 
-	bool currentlyPlaying, changeState;
+	bool currentlyPlaying, changeState, finishedLoadingState;
 	float speed;
 public:
 	TransitionSystem();
@@ -18,6 +18,9 @@ public:
 
 	// Sets the speed of transitions between game state switches.
 	void SetSpeed(float speed);
+
+	// Notifies the transition system that the game state has loaded, allowing for the transition to end.
+	void NotifyGameStateLoaded();
 
 	// Starts the transition.
 	void Play();

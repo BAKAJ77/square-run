@@ -32,7 +32,7 @@ protected:
 	// For rendering objects in the game state.
 	virtual void Render() const = 0;
 
-	void SwitchState(GameState* gameState, float transitionSpeed = 3000.0f);
+	void SwitchState(GameState* gameState, float transitionSpeed = 1000.0f);
 	void PushState(GameState* gameState);
 	void PopState();
 };

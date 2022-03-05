@@ -88,6 +88,8 @@ void GameStateSystem::Update(const double& deltaTime)
 		this->pendingGameState->Init();
 		this->stateStack.emplace_back(this->pendingGameState);
 		this->pendingGameState = nullptr;
+		
+		TransitionSystem::GetInstance().NotifyGameStateLoaded();
 	}
 
 	for (size_t stateIndex = 0; stateIndex < this->stateStack.size(); stateIndex++)
