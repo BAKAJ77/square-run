@@ -2,6 +2,7 @@
 #define INPUT_SYSTEM_H
 
 #include <core/window_frame.h>
+#include <graphics/orthogonal_camera.h>
 #include <glm/glm.hpp>
 
 // Key codes extracted from the GLFW 3 source code.
@@ -175,8 +176,10 @@ public:
 	// Returns TRUE if the mouse button specified was pressed, else FALSE is returned.
 	bool WasMouseButtonPressed(MouseCode button) const;
 
+	// If you pass a orthogonal camera object, then the cursor position is mapped to the camera viewport resolution 
+	// instead of the window resolution.
 	// Returns the current position of the cursor.
-	glm::vec2 GetCursorPosition() const;
+	glm::vec2 GetCursorPosition(const OrthogonalCamera* viewport = nullptr) const;
 
 	// Returns singleton instance object of this class.
 	static InputSystem& GetInstance();
