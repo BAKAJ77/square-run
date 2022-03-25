@@ -1,5 +1,6 @@
 #include <core/game_state.h>
 #include <core/transition_system.h>
+#include <interface/user_interface.h>
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -94,10 +95,13 @@ void GameStateSystem::Update(const double& deltaTime)
 
 	for (size_t stateIndex = 0; stateIndex < this->stateStack.size(); stateIndex++)
 	{
+		// Update the current active game state (and game states which are set to be updated while paused)
 		GameState* gameState = this->stateStack[stateIndex];
 		if ((stateIndex == 0) || (gameState->updateWhilePaused))
 			gameState->Update(deltaTime);
 	}
+
+	UserInterfaceManager::GetInstance().UpdateActiveUI(deltaTime);
 }
 
 void GameStateSystem::Render() const
@@ -111,6 +115,8 @@ void GameStateSystem::Render() const
 		if ((stateIndex == 0) || (gameState->renderWhilePaused))
 			gameState->Render();
 	}
+
+	UserInterfaceManager::GetInstance().RenderActiveUI();
 
 	TransitionSystem::GetInstance().Render();
 	Renderer::GetInstance().FlushRenderedScene();

@@ -1,4 +1,5 @@
 #include <states/main_menu.h>
+#include <interface/user_interface.h>
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -11,6 +12,21 @@ void MainMenu::Init()
 	this->effectPositions[1] = { 2670, (this->camera.GetSize().y / 2.0f) + 10 };
 	this->effectPositions[2] = { (this->camera.GetSize().x / 2.0f) - 10, -750 };
 	this->effectPositions[3] = { (this->camera.GetSize().x / 2.0f) + 10, 1830 };
+
+	// Initialize main menu user interface
+	UserInterfaceManager::GetInstance().CreateNewUI("main-menu", this->camera);
+	UserInterfaceManager::GetInstance().SetActiveUI("main-menu");
+
+	UserInterfaceManager::GetInstance().GetUIObject("main-menu")->AddButtonElement("play", "PLAY", { 255, 255, 255, 255 }, 115, 
+		{ 485, 275 }, { 805, 400 }, { 255, 0, 0, 255 }, HoverReactionType::HIGHLIGHT_ENLARGE_ALL_ROUND);
+	UserInterfaceManager::GetInstance().GetUIObject("main-menu")->AddButtonElement("settings", "SETTINGS", { 255, 255, 255, 255 }, 115,
+		{ 1425, 275 }, { 805, 400 }, { 255, 0, 0, 255 }, HoverReactionType::HIGHLIGHT_ENLARGE_ALL_ROUND);
+	UserInterfaceManager::GetInstance().GetUIObject("main-menu")->AddButtonElement("credits", "CREDITS", { 255, 255, 255, 255 }, 115,
+		{ 485, 790 }, { 805, 400 }, { 255, 0, 0, 255 }, HoverReactionType::HIGHLIGHT_ENLARGE_ALL_ROUND);
+	UserInterfaceManager::GetInstance().GetUIObject("main-menu")->AddButtonElement("exit", "EXIT", { 255, 255, 255, 255 }, 115,
+		{ 1425, 790 }, { 805, 400 }, { 255, 0, 0, 255 }, HoverReactionType::HIGHLIGHT_ENLARGE_ALL_ROUND);
+
+	UserInterfaceManager::GetInstance().GetUIObject("main-menu")->GetButtonElement("exit")->SetClickEventCallback([=]() { this->PopState(); });
 
 	// Load the game state textures
 	this->borderTexture = Memory::LoadTextureFromFile("state_border.png");
@@ -71,10 +87,12 @@ MainMenu* MainMenu::GetGameState()
 void MainMenu::UpdateEffects(const double& deltaTime)
 {
 	// Update the effect positions
-	this->effectPositions[0].x += 125 * (float)deltaTime;
-	this->effectPositions[1].x -= 125 * (float)deltaTime;
-	this->effectPositions[2].y += 125 * (float)deltaTime;
-	this->effectPositions[3].y -= 125 * (float)deltaTime;
+	float effectSpeed = 200.0f;
+
+	this->effectPositions[0].x += effectSpeed * (float)deltaTime;
+	this->effectPositions[1].x -= effectSpeed * (float)deltaTime;
+	this->effectPositions[2].y += effectSpeed * (float)deltaTime;
+	this->effectPositions[3].y -= effectSpeed * (float)deltaTime;
 
 	// Restart effect positions if they are offscreen
 	if (this->effectPositions[0].x >= 2670)
