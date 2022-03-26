@@ -22,7 +22,7 @@ namespace Util
 		if (!directoryBuffer) // An error must've occurred
 			throw std::exception("Failed to fetch the game's requisites directory");
 
-		std::string directory = directoryBuffer + std::string("/SquareRun/");
+		std::string directory = directoryBuffer + std::string("/square-run/");
 		std::replace(directory.begin(), directory.end(), '\\', '/');
 
 		if (!Util::IsExistingDirectory(directory))
