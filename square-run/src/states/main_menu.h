@@ -15,10 +15,15 @@ private:
 
 	// Logic variables
 	glm::vec2 effectPositions[4];
-	float borderOpacity;
+	float borderOpacity, effectOpacity;
 protected:
 	void Init() override;
 	void Destroy() override;
+
+	void Resume() override;
+
+	bool OnExitTransitionUpdate(const double& deltaTime) override;
+	bool OnStartTransitionUpdate(const double& deltaTime) override;
 
 	void Update(const double& deltaTime) override;
 	void Render() const override;

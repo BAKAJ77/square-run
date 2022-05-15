@@ -4,6 +4,14 @@
 #include <graphics/renderer.h>
 #include <vector>
 
+enum class GameStateChange
+{
+	NONE = 0,
+	SWITCH = 1,
+	PUSH = 2,
+	POP = 3
+};
+
 class GameState
 {
 	friend class GameStateSystem;
@@ -35,12 +43,22 @@ protected:
 	void SwitchState(GameState* gameState, float transitionSpeed = 1000.0f);
 	void PushState(GameState* gameState);
 	void PopState();
+public:
+	// For playing and updating a custom transition animation when pausing or popping this game state.
+	// The transition is signalled as ended when this function returns FALSE.
+	virtual bool OnExitTransitionUpdate(const double& deltaTime);
+
+	// For playing and updating a custom transition animation when resuming this game state.
+	// The transition is signalled as ended when this function returns FALSE.
+	virtual bool OnStartTransitionUpdate(const double& deltaTime);
 };
 
 class GameStateSystem
 {
 private:
 	std::vector<GameState*> stateStack;
+
+	GameStateChange changeType;
 	GameState* pendingGameState;
 private:
 	GameStateSystem();

@@ -1,10 +1,12 @@
 #include <core/transition_system.h>
+#include <core/game_state.h>
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 TransitionSystem::TransitionSystem() :
 	camera({ 0, 0 }, { RenderingGlobals::sceneViewWidth, RenderingGlobals::sceneViewHeight }), currentlyPlaying(false), 
-	changeState(false), finishedLoadingState(false), speed(1000.0f)
+	changeState(false), finishedLoadingState(false), speed(1000.0f), triggeredGameState(nullptr), 
+	triggerType(TransitionTrigger::START_GAME_STATE_TRANSITION), customCurrentlyPlaying(false), wasRecentTransitionCustom(false)
 {}
 
 void TransitionSystem::SetSpeed(float speed)
@@ -15,6 +17,7 @@ void TransitionSystem::SetSpeed(float speed)
 void TransitionSystem::NotifyGameStateLoaded()
 {
 	this->finishedLoadingState = true;
+	this->changeState = false;
 }
  
 void TransitionSystem::Play()
@@ -27,13 +30,37 @@ void TransitionSystem::Play()
 
 	this->currentlyPlaying = true;
 	this->finishedLoadingState = false;
-	this->changeState = false;
+}
+
+void TransitionSystem::Play(GameState* gameState, TransitionTrigger gameStateTrigger)
+{
+	this->triggeredGameState = gameState;
+	this->triggerType = gameStateTrigger;
 }
 
 void TransitionSystem::Update(const double& deltaTime)
 {
-	if (this->currentlyPlaying)
+	if (this->triggeredGameState && !this->currentlyPlaying)
 	{
+		this->customCurrentlyPlaying = true;
+		this->wasRecentTransitionCustom = true;
+
+		bool transitionComplete;
+		if (this->triggerType == TransitionTrigger::EXIT_GAME_STATE_TRANSITION)
+			transitionComplete = !this->triggeredGameState->OnExitTransitionUpdate(deltaTime);
+		else
+			transitionComplete = !this->triggeredGameState->OnStartTransitionUpdate(deltaTime);
+
+		if (transitionComplete)
+		{
+			this->triggeredGameState = nullptr;
+			this->customCurrentlyPlaying = false;
+		}
+	}
+	else if (this->currentlyPlaying)
+	{
+		this->wasRecentTransitionCustom = false;
+
 		// Update the transition rectangles positions
 		if (!this->changeState)
 		{
@@ -82,9 +109,24 @@ bool TransitionSystem::IsPlaying() const
 	return this->currentlyPlaying;
 }
 
+bool TransitionSystem::IsPlayingCustom() const
+{
+	return this->customCurrentlyPlaying;
+}
+
 bool TransitionSystem::ShouldChangeState() const
 {
 	return this->changeState;
+}
+
+bool TransitionSystem::WasRecentTransitionCustom() const
+{
+	return this->wasRecentTransitionCustom;
+}
+
+TransitionTrigger TransitionSystem::GetTriggerType() const
+{
+	return this->triggerType;
 }
 
 TransitionSystem& TransitionSystem::GetInstance()
